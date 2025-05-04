@@ -46,10 +46,13 @@
 # ===============================AYRTON=====================================
 # ==========================================================================
 
+confirm-close-surface = false
+
 # Theme
 
 theme = "Monokai Classic"
 background-opacity = 0.9
+
 # Keybindings
 
 keybind = ctrl+l>r=reload_config
