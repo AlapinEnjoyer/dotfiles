@@ -51,7 +51,7 @@ confirm-close-surface = false
 # Theme
 
 theme = "Monokai Classic"
-background-opacity = 0.9
+background-opacity = 0.95
 
 # Keybindings
 
@@ -62,3 +62,9 @@ keybind = ctrl+l>r=reload_config
 cursor-style = block
 cursor-style-blink = false
 shell-integration-features = no-cursor
+
+# font
+font-family = "JetBrainsMonoNL Nerd Font Mono"
+font-size = 18
+ 
+#term = xtermn-256color
