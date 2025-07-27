@@ -64,7 +64,7 @@ cursor-style-blink = false
 shell-integration-features = no-cursor
 
 # font
-font-family = "JetBrainsMonoNL Nerd Font Mono"
+font-family = "Noto Sans Mono"
 font-size = 16
  
 #term = xtermn-256color
