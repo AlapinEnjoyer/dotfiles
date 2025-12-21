@@ -1,33 +1,22 @@
 {
   "position": "top",
   "modules-left": ["hyprland/workspaces"],
-  "modules-center": ["hyprland/window", "custom/nvidia"],
-  "modules-right": ["bluetooth", "network", "pulseaudio", "battery", "clock"],
+  "modules-center": ["hyprland/window", "custom/gpu"],
+  "modules-right": ["bluetooth", "network", "pulseaudio", "clock"],
+  // "custom/gpu": {
+  //   "exec": "nvtop -s | jq -r '.[0] | \"GPU: \\(.gpu_util) VRAM: \\(.mem_util) Temp: \\(.temp) Power: \\(.power_draw)\"'",
+  //   "format": "{}",
+  //   "interval": 60
+  // },
   "clock": {
     "format": "<span foreground='#f5c2e7'>   </span>{:%a %d %H:%M}",
     "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
   },
-  "battery": {
-    "states": {
-      "warning": 30,
-      "critical": 15
-    },
-    "format": "<span size='13000' foreground='#a6e3a1'>{icon} </span> {capacity}%",
-    "format-warning": "<span size='13000' foreground='#B1E3AD'>{icon} </span> {capacity}%",
-    "format-critical": "<span size='13000' foreground='#E38C8F'>{icon} </span> {capacity}%",
-    "format-charging": "<span size='13000' foreground='#B1E3AD'> </span>{capacity}%",
-    "format-plugged": "<span size='13000' foreground='#B1E3AD'> </span>{capacity}%",
-    "format-alt": "<span size='13000' foreground='#B1E3AD'>{icon} </span> {time}",
-    "format-full": "<span size='13000' foreground='#B1E3AD'> </span>{capacity}%",
-    "format-icons": ["", "", "", "", ""],
-    "tooltip-format": "{time}"
-  },
   "network": {
-    "format-wifi": "<span size='13000' foreground='#f5e0dc'>  </span>{essid}",
-    "format-ethernet": "<span size='13000' foreground='#f5e0dc'>󰤭  </span> Disconnected",
+    "format-ethernet": "<span size='13000' foreground='#f5e0dc'>  </span>{ifname} {ipaddr}",
     "format-linked": "{ifname} (No IP) ",
     "format-disconnected": "<span size='13000' foreground='#f5e0dc'>  </span>Disconnected",
-    "tooltip-format-wifi": "Signal Strenght: {signalStrength}%"
+    "tooltip-format-ethernet": "Ethernet: {ifname}\nIP: {ipaddr}"
   },
   "pulseaudio": {
       "format": "{icon}  {volume}%",
@@ -39,10 +28,5 @@
   },
  "bluetooth": {
       "on-click": "blueman-manager"
- },
-  "custom/nvidia": {
-      "exec": "nvidia-smi --query-gpu=utilization.gpu,temperature.gpu --format=csv,nounits,noheader | sed 's/\\([0-9]\\+\\), \\([0-9]\\+\\)/\\1% 🌡️\\2°C/g'",
-      "format": "{}",
-      "interval": 2
- },
+ }
 }
