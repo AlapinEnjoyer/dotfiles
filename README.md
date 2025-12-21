@@ -16,7 +16,7 @@ use stow to create symlinks!
 
 ```zsh
 cd dotfiles
-stow backgrounds conf ghostty hypridle hyprland hyprlock hyprpaper waybar rofi
+stow backgrounds conf ghostty hypridle hyprland hyprlock hyprpaper waybar rofi scripts
 ```
 
 ## Zsh

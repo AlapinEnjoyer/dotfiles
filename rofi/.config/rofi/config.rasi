@@ -42,10 +42,11 @@ mainbox {
 imagebox {
     padding:                     20px;
     background-color:            transparent;
-    background-image:            url("~/.config/backgrounds/nausicaa.jpg", height);
     orientation:                 vertical;
     children:                    [ "inputbar", "dummy", "mode-switcher" ];
 }
+
+@import "background.rasi"
 
 listbox {
     spacing:                     20px;
