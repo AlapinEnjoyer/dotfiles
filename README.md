@@ -16,5 +16,16 @@ use stow to create symlinks!
 
 ```zsh
 cd dotfiles
-stow hypridle hyprlock hyprpaper hyprland
+stow backgrounds conf ghostty hypridle hyprland hyprlock hyprpaper waybar rofi
 ```
+
+## Zsh
+
+### If on macOS remember first to install the tools
+brew install fzf eza bat
+
+### On Arch
+pacman -S fzf eza bat fd ripgrep
+
+
+@theme "/usr/share/rofi/themes/fancy2.rasi"
