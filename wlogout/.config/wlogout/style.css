@@ -1,0 +1,56 @@
+* {
+    background-image: none;
+    font-size: 20px;
+    font-family: "MartianMono Nerd Font";
+}
+
+window {
+    background-color: rgba(18, 20, 22, 0.85);
+}
+
+button {
+    border-radius: 20px;
+    margin: 10px;
+    color: #e2e2e2;
+    background-color: rgba(26, 28, 30, 0.9);
+    border: 2px solid transparent;
+    outline-style: none;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 20%;
+    box-shadow: none;
+    text-shadow: none;
+    transition: all 0.3s ease;
+}
+
+button:hover,
+button:focus {
+    background-color: rgba(221, 135, 106, 0.3);
+    border: 2px solid #dd876a;
+    background-size: 28%;
+    transition: all 0.3s cubic-bezier(.55, 0.0, .28, 1.682);
+}
+
+#lock {
+    background-image: image(url("./icons/lock.png"));
+}
+
+#logout {
+    background-image: image(url("./icons/logout.png"));
+}
+
+#suspend {
+    background-image: image(url("./icons/sleep.png"));
+}
+
+#reboot {
+    background-image: image(url("./icons/restart.png"));
+}
+
+#hibernate {
+    background-image: image(url("./icons/hibernate.png"));
+}
+
+#shutdown {
+    background-image: image(url("./icons/power.png"));
+}

@@ -30,8 +30,9 @@ fi
 NEXT_INDEX=$(( (CURRENT_INDEX + 1) % ${#WALLPAPERS[@]} ))
 WALLPAPER="${WALLPAPERS[$CURRENT_INDEX]}"
 
-hyprctl hyprpaper preload "$WALLPAPER"
-hyprctl hyprpaper wallpaper ", $WALLPAPER"
+# Hyprpaper 0.8.0+ syntax: preload is no longer needed
+# Format: hyprctl hyprpaper wallpaper '[mon], [path], [fit_mode]'
+hyprctl hyprpaper wallpaper ", $WALLPAPER, cover"
 
 # Update rofi background config (only targets imagebox element)
 cat > "$ROFI_BG_FILE" << EOF

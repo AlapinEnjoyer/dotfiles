@@ -1,32 +1,140 @@
 {
+  "layer": "top",
   "position": "top",
-  "modules-left": ["hyprland/workspaces"],
-  "modules-center": ["hyprland/window", "custom/gpu"],
-  "modules-right": ["bluetooth", "network", "pulseaudio", "clock"],
-  // "custom/gpu": {
-  //   "exec": "nvtop -s | jq -r '.[0] | \"GPU: \\(.gpu_util) VRAM: \\(.mem_util) Temp: \\(.temp) Power: \\(.power_draw)\"'",
-  //   "format": "{}",
-  //   "interval": 60
-  // },
+  "exclusive": true,
+  "passthrough": false,
+  "spacing": 4,
+  "fixed-center": true,
+  "ipc": true,
+  "margin-top": 4,
+  "margin-left": 8,
+  "margin-right": 8,
+
+  "modules-left": [
+    "hyprland/workspaces",
+    "clock",
+    "tray"
+  ],
+
+  "modules-center": [
+    "hyprland/window"
+  ],
+
+  "modules-right": [
+    "network",
+    "pulseaudio",
+    "bluetooth",
+    "custom/power"
+  ],
+
+  // Workspaces
+  "hyprland/workspaces": {
+    "active-only": false,
+    "all-outputs": true,
+    "format": "{name}",
+    "show-special": false,
+    "on-click": "activate",
+    "on-scroll-up": "hyprctl dispatch workspace e+1",
+    "on-scroll-down": "hyprctl dispatch workspace e-1",
+    "persistent-workspaces": {
+      "*": 5
+    }
+  },
+
+  // Window title
+  "hyprland/window": {
+    "format": "{}",
+    "max-length": 50,
+    "separate-outputs": true,
+    "rewrite": {
+      "(.*) — Mozilla Firefox": " $1",
+      "(.*) - zen": "󰰷 $1",
+      "(.*) - Ghostty": " $1",
+      "(.*) - Discord": " $1",
+      "": "Desktop"
+    }
+  },
+
+  // Clock
   "clock": {
-    "format": "<span foreground='#f5c2e7'>   </span>{:%a %d %H:%M}",
-    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+    "interval": 1,
+    "format": "{:%H:%M}",
+    "format-alt": "{:%A, %d %B %Y | %H:%M}",
+    "tooltip-format": "<tt><small>{calendar}</small></tt>",
+    "calendar": {
+      "mode": "year",
+      "mode-mon-col": 3,
+      "weeks-pos": "right",
+      "on-scroll": 1,
+      "format": {
+        "months": "<span color='#dd876a'><b>{}</b></span>",
+        "days": "<span color='#e2e2e2'><b>{}</b></span>",
+        "weeks": "<span color='#89a1b3'><b>W{}</b></span>",
+        "weekdays": "<span color='#a7ad8d'><b>{}</b></span>",
+        "today": "<span color='#dd876a'><b><u>{}</u></b></span>"
+      }
+    }
   },
+
+  // System tray
+  "tray": {
+    "icon-size": 18,
+    "spacing": 8
+  },
+
+  // Network
   "network": {
-    "format-ethernet": "<span size='13000' foreground='#f5e0dc'>  </span>{ifname} {ipaddr}",
-    "format-linked": "{ifname} (No IP) ",
-    "format-disconnected": "<span size='13000' foreground='#f5e0dc'>  </span>Disconnected",
-    "tooltip-format-ethernet": "Ethernet: {ifname}\nIP: {ipaddr}"
+    "format": "{ifname}",
+    "format-wifi": "{icon}",
+    "format-ethernet": "󰌘",
+    "format-disconnected": "󰌙",
+    "tooltip-format": "{ipaddr}  {bandwidthUpBits}  {bandwidthDownBits}",
+    "format-linked": "󰈁 {ifname} (No IP)",
+    "tooltip-format-wifi": "{essid} {icon} {signalStrength}%",
+    "tooltip-format-ethernet": "{ifname} 󰌘 | {ipaddr}",
+    "tooltip-format-disconnected": "󰌙 Disconnected",
+    "max-length": 30,
+    "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"]
   },
+
+  // Pulseaudio
   "pulseaudio": {
-      "format": "{icon}  {volume}%",
-      "format-muted": "",
-      "format-icons": {
-          "default": ["", "", " "]
-      },
-      "on-click": "pavucontrol"
+    "format": "{icon} {volume}%",
+    "format-bluetooth": "{icon} 󰂰 {volume}%",
+    "format-muted": "󰖁",
+    "format-icons": {
+      "headphone": "",
+      "hands-free": "",
+      "headset": "",
+      "phone": "",
+      "portable": "",
+      "car": "",
+      "default": ["", "", "󰕾", ""]
+    },
+    "scroll-step": 5.0,
+    "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+    "on-click-right": "pavucontrol",
+    "tooltip-format": "{icon} {desc} | {volume}%",
+    "smooth-scrolling-threshold": 1
   },
- "bluetooth": {
-      "on-click": "blueman-manager"
- }
+
+  // Bluetooth
+  "bluetooth": {
+    "format": "",
+    "format-disabled": "󰂳",
+    "format-connected": "󰂱 {num_connections}",
+    "tooltip-format": "{device_alias}",
+    "tooltip-format-connected": "{device_enumerate}",
+    "tooltip-format-enumerate-connected": "{device_alias} 󰂄{device_battery_percentage}%",
+    "tooltip": true,
+    "on-click": "blueman-manager"
+  },
+
+  // Power button
+  "custom/power": {
+    "format": "⏻",
+    "on-click": "wlogout -b 3",
+    "tooltip": true,
+    "tooltip-format": "Power Menu"
+  }
 }

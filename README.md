@@ -2,30 +2,32 @@
 
 Repo containing my dotfiles for hyprland.
 
-It is reccomended to install a nerd font for icon support.
+## Prerequisites
 
-For example install MartianMono Nerd Font, extract it to your font directory (/usr/share/fonts) and then upadte the cache ```fc-cache -fv```
+Install a nerd font for icon support. For example MartianMono Nerd Font:
+- Extract to `/usr/share/fonts`
+- Update cache: `fc-cache -fv`
 
-First install all the packages:
+### Install yay (if not already installed)
 
 ```zsh
-pacman -S stow blueman hypridle hyprlock hyprpaper hyprland hyprshot ghostty nautilus firefox rofi-wayland waybar fastfetch brightnessctl
+sudo pacman -S --needed base-devel git
+git clone https://aur.archlinux.org/yay.git
+cd yay && makepkg -si && cd .. && rm -rf yay
 ```
 
-use stow to create symlinks!
+## Installation
+
+Install all packages:
 
 ```zsh
+yay -S stow blueman hypridle hyprlock hyprpaper hyprland hyprshot ghostty dolphin zen-browser-bin rofi-wayland waybar fastfetch brightnessctl wlogout fzf eza bat fd ripgrep
+```
+
+Clone and stow:
+
+```zsh
+git clone https://github.com/AlapinEnjoyer/dotfiles.git
 cd dotfiles
-stow backgrounds conf ghostty hypridle hyprland hyprlock hyprpaper waybar rofi scripts
+stow backgrounds conf ghostty hypridle hyprland hyprlock hyprpaper waybar rofi scripts wlogout
 ```
-
-## Zsh
-
-### If on macOS remember first to install the tools
-brew install fzf eza bat
-
-### On Arch
-pacman -S fzf eza bat fd ripgrep
-
-
-@theme "/usr/share/rofi/themes/fancy2.rasi"
