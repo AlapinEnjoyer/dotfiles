@@ -13,7 +13,7 @@
   "modules-left": [
     "hyprland/workspaces",
     "clock",
-    "tray"
+    "custom/weather"
   ],
 
   "modules-center": [
@@ -21,13 +21,13 @@
   ],
 
   "modules-right": [
+    "group/hardware",
     "network",
     "pulseaudio",
-    "bluetooth",
+    "tray",
     "custom/power"
   ],
 
-  // Workspaces
   "hyprland/workspaces": {
     "active-only": false,
     "all-outputs": true,
@@ -41,7 +41,6 @@
     }
   },
 
-  // Window title
   "hyprland/window": {
     "format": "{}",
     "max-length": 50,
@@ -55,7 +54,6 @@
     }
   },
 
-  // Clock
   "clock": {
     "interval": 1,
     "format": "{:%H:%M}",
@@ -76,13 +74,11 @@
     }
   },
 
-  // System tray
   "tray": {
     "icon-size": 18,
     "spacing": 8
   },
 
-  // Network
   "network": {
     "format": "{ifname}",
     "format-wifi": "{icon}",
@@ -97,7 +93,6 @@
     "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"]
   },
 
-  // Pulseaudio
   "pulseaudio": {
     "format": "{icon} {volume}%",
     "format-bluetooth": "{icon} 󰂰 {volume}%",
@@ -118,19 +113,63 @@
     "smooth-scrolling-threshold": 1
   },
 
-  // Bluetooth
-  "bluetooth": {
-    "format": "",
-    "format-disabled": "󰂳",
-    "format-connected": "󰂱 {num_connections}",
-    "tooltip-format": "{device_alias}",
-    "tooltip-format-connected": "{device_enumerate}",
-    "tooltip-format-enumerate-connected": "{device_alias} 󰂄{device_battery_percentage}%",
+  "custom/weather": {
+    "exec": "~/.config/waybar/scripts/weather.sh",
+    "return-type": "json",
+    "format": "{}",
     "tooltip": true,
-    "on-click": "blueman-manager"
+    "interval": 1800
   },
 
-  // Power button
+  "group/hardware": {
+    "orientation": "inherit",
+    "drawer": {
+      "transition-duration": 300,
+      "transition-left-to-right": true,
+      "click-to-reveal": true
+    },
+    "modules": [
+      "custom/hardware-icon",
+      "cpu",
+      "memory",
+      "temperature#cpu"
+    ]
+  },
+
+  "custom/hardware-icon": {
+    "format": "󰍛",
+    "tooltip": false
+  },
+
+  "cpu": {
+    "interval": 10,
+    "format": " {usage}%",
+    "tooltip-format": "CPU: {usage}%\nLoad: {load}",
+    "states": {
+      "warning": 70,
+      "critical": 90
+    }
+  },
+
+  "memory": {
+    "interval": 30,
+    "format": " {percentage}%",
+    "tooltip-format": "RAM: {used:0.1f}GB / {total:0.1f}GB",
+    "states": {
+      "warning": 70,
+      "critical": 90
+    }
+  },
+
+  "temperature#cpu": {
+    "interval": 10,
+    "hwmon-path": "/sys/class/hwmon/hwmon3/temp1_input",
+    "critical-threshold": 80,
+    "format": " {temperatureC}°C",
+    "format-critical": " {temperatureC}°C",
+    "tooltip-format": "CPU: {temperatureC}°C"
+  },
+
   "custom/power": {
     "format": "⏻",
     "on-click": "wlogout -b 3",

@@ -21,7 +21,7 @@ cd yay && makepkg -si && cd .. && rm -rf yay
 Install all packages:
 
 ```zsh
-yay -S stow blueman hypridle hyprlock hyprpaper hyprland hyprshot ghostty dolphin zen-browser-bin rofi-wayland waybar fastfetch brightnessctl wlogout fzf eza bat fd ripgrep
+yay -S stow blueman hypridle hyprlock hyprpaper hyprland hyprshot ghostty dolphin zen-browser-bin rofi-wayland waybar fastfetch brightnessctl wlogout fzf eza bat fd ripgrep noto-fonts-emoji
 ```
 
 Clone and stow:
@@ -29,5 +29,5 @@ Clone and stow:
 ```zsh
 git clone https://github.com/AlapinEnjoyer/dotfiles.git
 cd dotfiles
-stow backgrounds conf ghostty hypridle hyprland hyprlock hyprpaper waybar rofi scripts wlogout
+stow backgrounds conf fontconfig ghostty hypridle hyprland hyprlock hyprpaper waybar rofi scripts wlogout
 ```

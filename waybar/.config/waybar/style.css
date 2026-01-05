@@ -174,3 +174,56 @@ tooltip label {
 #custom-power:hover {
     color: @error;
 }
+
+/* --- Weather --- */
+#custom-weather {
+    color: @secondary;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-right: 8px;
+    padding-left: 8px;
+}
+
+/* --- Hardware Group --- */
+#hardware {
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-right: 8px;
+    padding-left: 8px;
+}
+
+#custom-hardware-icon {
+    color: @tertiary;
+}
+
+#cpu {
+    color: @secondary;
+}
+
+#cpu.warning {
+    color: @primary;
+}
+
+#cpu.critical {
+    color: @error;
+}
+
+#memory {
+    color: @secondary;
+}
+
+#memory.warning {
+    color: @primary;
+}
+
+#memory.critical {
+    color: @error;
+}
+
+#temperature {
+    color: @tertiary;
+}
+
+#temperature.critical {
+    color: @error;
+}
