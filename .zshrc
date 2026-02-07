@@ -32,10 +32,10 @@ zinit light romkatv/powerlevel10k
 # ============================================================
 # Zsh plugins
 # ============================================================
-zinit light zsh-users/zsh-syntax-highlighting
-zinit light zsh-users/zsh-autosuggestions
 zinit light zsh-users/zsh-completions
 zinit light Aloxaf/fzf-tab
+zinit light zsh-users/zsh-autosuggestions
+zinit light zsh-users/zsh-syntax-highlighting
 
 # ============================================================
 # Powerlevel10k config
@@ -69,12 +69,9 @@ setopt auto_cd
 # ============================================================
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 zstyle ':completion:*' menu no
-zstyle ':completion:*' list-colors \
-  'no=00;00:fi=00;00:di=01;34:ln=01;36:pi=40;33:so=01;35:\
-bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:\
-ex=01;32:*.tar=01;31:*.zip=01;31:*.gz=01;31'
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
-zstyle ':fzf-tab:complete:cd*' fzf-preview 'ls --color=always $realpath'
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza --tree --color=always $realpath'
 
 # ============================================================
 # fzf
@@ -127,7 +124,6 @@ zo() {
 # ============================================================
 # Aliases
 # ============================================================
-alias cd='z'
 alias ls='eza --color=always --icons=always'
 alias ll='eza --color=always --long --git --icons=always'
 alias la='eza --color=always --long --git --icons=always -a'
@@ -151,7 +147,7 @@ alias v='nvim'
 # ============================================================
 # PATH
 # ============================================================
-#export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
 
 # ============================================================
 # Word deletion: stop at /
@@ -162,3 +158,6 @@ slash-backward-kill-word() {
 }
 zle -N slash-backward-kill-word
 bindkey '^[^?' slash-backward-kill-word
+
+eval "$(mise activate zsh)"
+eval "$(uv generate-shell-completion zsh)"
