@@ -110,6 +110,10 @@ tooltip label {
     padding-left: 8px;
 }
 
+#pulseaudio {
+    padding-right: 4px;
+}
+
 /* --- Window Title --- */
 #window {
     color: @on-surface-variant;
