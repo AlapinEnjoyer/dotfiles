@@ -9,9 +9,8 @@ fi
 # Environment
 # ============================================================
 #eval "$(/opt/homebrew/bin/brew shellenv)"
-eval "$(mise activate zsh)"
-
 export PATH="$HOME/.local/bin:$PATH"
+eval "$(mise activate zsh)"
 
 # ============================================================
 # Zinit (plugin manager)
