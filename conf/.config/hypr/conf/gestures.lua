@@ -1,0 +1,2 @@
+-- Workspace swipe is currently disabled to match the previous hyprlang config.
+-- hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })
