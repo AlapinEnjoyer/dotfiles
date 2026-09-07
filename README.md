@@ -87,6 +87,65 @@ This nix-darwin version does not provide an activation dry-run;
 the initial Homebrew activation uses `cleanup = "none"` and does not uninstall
 undeclared software.
 
+If the first switch reports unexpected `/etc/bashrc` and `/etc/zshrc`, stop and
+review both files and `result/etc/{bashrc,zshenv,zprofile,zshrc}`, plus the store
+file sourced as `set-environment`. On this mini the existing files contain a Nix
+installer block followed by standard macOS content; their hashes are not in the
+pinned nix-darwin allowlist. Do not bypass the check or add their hashes blindly.
+
+With `nix.enable = false`, nix-darwin leaves the external Nix installation and
+daemon management alone, but still generates the shell environment. Its Bash rc
+and Zsh env source `set-environment`, which supplies `~/.nix-profile/bin`,
+`/run/current-system/sw/bin`, `/nix/var/nix/profiles/default/bin`, `NIX_PROFILES`,
+and the certificate path. The old `nix-daemon.sh` block sets shell variables; it
+does not start the daemon. The installed `org.nixos.nix-daemon` launchd service
+starts it independently. Do not copy the old rc files into `.local` hooks: that
+would reintroduce competing initialization. Recheck this on other installations,
+especially ones using XDG Nix profiles or custom certificate/PATH settings.
+
+After reviewing and building, keep this terminal open. Run the following only
+for these two confirmed conflicts. It checks both destinations (including dangling
+symlinks) before moving anything, refuses non-regular/symlink sources, and uses
+macOS `mv -n` to avoid overwriting backups. If a backup already exists, inspect it
+and choose a fresh suffix in the script rather than deleting it.
+
+```sh
+sudo /bin/sh -eu <<'SH'
+suffix=.before-nix-darwin
+for file in /etc/bashrc /etc/zshrc; do
+  test -f "$file" && test ! -L "$file" || {
+    printf 'Stop: unexpected source %s\n' "$file" >&2; exit 1;
+  }
+  if test -e "$file$suffix" || test -L "$file$suffix"; then
+    printf 'Stop: backup already exists: %s\n' "$file$suffix" >&2; exit 1
+  fi
+done
+for file in /etc/bashrc /etc/zshrc; do
+  /bin/mv -n "$file" "$file$suffix"
+  if test -e "$file" || test -L "$file"; then
+    printf 'Stop: source was not moved: %s\n' "$file" >&2; exit 1
+  fi
+done
+SH
+# Only after the backup command succeeds:
+sudo ./result/sw/bin/darwin-rebuild switch --flake '.#ayrton@mini'
+```
+
+The two moves are not atomic. If a move or the retry fails, keep the terminal
+open, inspect the state, and resolve the reported problem before retrying; do not
+rerun the backup script blindly. To restore an original while its `/etc` path is
+still absent, use `sudo /bin/mv -n /etc/bashrc.before-nix-darwin /etc/bashrc`
+(and likewise for `zshrc`). Never overwrite a generated symlink or another file
+without reviewing it first. These backups are not automatically sourced.
+The generated Zsh rc also replaces macOS keybindings/Terminal.app session setup;
+Bash retains its Terminal.app hook. Preserve any desired macOS behavior explicitly
+rather than sourcing the entire backup.
+
+After a successful switch, open a fresh terminal and run `command -v nix`,
+`nix --version`, `nix store ping --store daemon`, and `just test-zsh`. The separate
+Home Manager configuration must also be activated for user completion and prompt
+setup. A build alone cannot validate live activation or Terminal.app behavior.
+
 Open a new terminal and verify:
 
 ```sh
@@ -250,11 +309,18 @@ Zsh does not change it. Both shells should load the same managed home configurat
 
 Completion directories are set before the single `compinit` invocation:
 
+The mini disables nix-darwin's system completion initialization (both `compinit`
+and `bashcompinit`) and default SuSE prompt. Home Manager is the sole owner;
+other users without Home Manager no longer receive these system defaults.
+
 - `~/.config/zsh/completions` links to this repo's handwritten completions, such as
   `_ask`. Add files with a `#compdef command` header in the repository.
 - Nix profile completion directories supply definitions for Nix-managed commands.
 - Nix's zsh-completions package supplies additional definitions.
 - `modules/terminal/zsh/homebrew.nix` adds Homebrew's completion directory for retained Brew tools.
+  It first resolves Homebrew's `Library/Homebrew` to load the matching `_brew`
+  completion from nix-homebrew's store tree. Migration can leave a dangling
+  prefix `_brew` link; the real definition takes precedence without deleting it.
 - Uv and gh generate completions from their active executables after
   `compinit`. No timestamp-based initialization cache is used.
 

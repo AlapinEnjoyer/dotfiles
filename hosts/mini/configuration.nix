@@ -3,6 +3,13 @@
 {
   system.primaryUser = user;
 
+  # Home Manager owns completion initialization and Powerlevel10k.
+  programs.zsh = {
+    enableCompletion = false;
+    enableBashCompletion = false;
+    promptInit = "";
+  };
+
   nix-homebrew = {
     enable = true;
     enableRosetta = false;

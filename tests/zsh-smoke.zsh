@@ -4,6 +4,15 @@
   local tool function_name output
   local failures=0
 
+  if [[ $OSTYPE == darwin* ]] && (( $+commands[brew] )); then
+    # Bypass the dump without deleting it: cached startup can hide broken links.
+    output=$( (autoload -Uz compinit; compinit -D; autoload -Uz +X _brew) 2>&1)
+    if [[ $? != 0 || -n $output || ${_comps[brew]} != _brew ]]; then
+      print -u2 -- "Homebrew completion initialization failed: $output"
+      (( failures++ ))
+    fi
+  fi
+
   for tool in bat fd rg eza glow zoxide tmux just mise uv gh ask; do
     if [[ -z ${_comps[$tool]} ]]; then
       print -u2 -- "Missing completion: $tool"
