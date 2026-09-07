@@ -49,7 +49,7 @@ before replacing existing shell startup files.
 | --- | --- | --- |
 | Home Manager | Shell, terminal packages, Git settings, Ghostty, fonts, mise configuration | `just switch-hm` |
 | nix-darwin | macOS settings and nix-homebrew lifecycle | `just switch-darwin` |
-| Homebrew | The casks declared in `hosts/mini/configuration.nix` | `just switch-darwin` reconciles undeclared formulas or casks with `cleanup = "uninstall"` without zapping app data |
+| Homebrew | The casks declared in `hosts/mini/configuration.nix` | `just switch-darwin` reconciles undeclared formulas or casks with `cleanup = "zap"`, including Homebrew-defined cask data |
 | mise | Node, pnpm, Rust, OpenTofu, Terragrunt, OpenCode, gh, uv, ffmpeg, and llama.cpp | Home Manager installs missing tools; `mise upgrade` upgrades them later |
 | uv tools | `hf`, `semble`, and `trv` in `~/.local/bin` | Intentionally imperative; install and upgrade with `uv tool` commands |
 | Cargo | `rustlings` | Intentionally imperative; manage with Cargo |

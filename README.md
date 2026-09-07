@@ -86,8 +86,8 @@ This installs the nix-darwin system profile and gives subsequent shells the
 do not change the configuration between reviewing the build and switching.
 `just build-darwin-dry-run` previews builds/downloads only, not activation.
 This nix-darwin version does not provide an activation dry-run. Homebrew uses
-`cleanup = "uninstall"`, so review the declared cask inventory before activation;
-undeclared formulas and casks are removed without zapping their application data.
+`cleanup = "zap"`, so review the declared cask inventory before activation;
+undeclared formulas and casks, including Homebrew-defined cask data, are removed.
 
 If the first switch reports unexpected `/etc/bashrc` and `/etc/zshrc`, stop and
 review both files and `result/etc/{bashrc,zshenv,zprofile,zshrc}`, plus the store
@@ -206,10 +206,10 @@ where future updates come from. Change the two inputs together when changing rel
 tracks, and keep `home.stateVersion` unchanged unless deliberately migrating state.
 
 Homebrew declares the Mac mini's remaining GUI casks in
-`hosts/mini/configuration.nix`. Activation uses `cleanup = "uninstall"`, so a
-future switch removes undeclared Homebrew formulas or casks but does not zap their
-application data. Mise remains managed by Home Manager. The existing Linux/Stow
-setup below remains unchanged.
+`hosts/mini/configuration.nix`. Activation uses `cleanup = "zap"`, so a future
+switch removes undeclared Homebrew formulas or casks and Homebrew-defined cask
+data. Mise remains managed by Home Manager. The existing Linux/Stow setup below
+remains unchanged.
 
 ### Migration status
 

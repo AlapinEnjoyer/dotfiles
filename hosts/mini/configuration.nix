@@ -23,8 +23,8 @@
     onActivation = {
       autoUpdate = false;
       upgrade = false;
-      # Keep the cask inventory declarative without deleting application data.
-      cleanup = "uninstall";
+      # Remove undeclared casks and their Homebrew-defined application data.
+      cleanup = "zap";
     };
 
     casks = [
@@ -46,6 +46,8 @@
       "zotero"
     ];
   };
+
+  system.defaults.NSGlobalDomain.AppleShowAllExtensions = true;
 
   system.stateVersion = 6;
 }
