@@ -28,15 +28,7 @@
     };
 
     brews = [
-      "btop"
-      "exiv2"
-      "ncdu"
-      "neovim"
       "nvtop"
-      "smartmontools"
-      "talosctl"
-      "tlrc"
-      "usage"
     ];
 
     casks = [
@@ -45,7 +37,6 @@
       "appcleaner"
       "betterdisplay"
       "blender"
-      "bruno"
       "discord"
       "docker-desktop"
       "geekbench"

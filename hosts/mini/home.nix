@@ -1,3 +1,5 @@
+{ pkgs, ... }:
+
 {
   imports = [
     ../../modules/terminal
@@ -10,6 +12,16 @@
   home.homeDirectory = "/Users/ayrton";
 
   programs.home-manager.enable = true;
+
+  # These tools are installed on the mini, rather than every terminal host.
+  home.packages = with pkgs; [
+    exiv2
+    neovim
+    smartmontools
+    talosctl
+    tlrc
+    usage
+  ];
 
   programs.git = {
     enable = true;

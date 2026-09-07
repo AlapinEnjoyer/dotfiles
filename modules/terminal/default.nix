@@ -14,6 +14,8 @@
     ripgrep
     eza
     glow
+    btop
+    ncdu
   ];
 
   home.sessionPath = [ "$HOME/.local/bin" ];

@@ -241,9 +241,11 @@ than stable nixpkgs versions. Run `mise upgrade` to update installed versions;
 `latest` does not automatically upgrade tools at shell startup. Project-local
 version requirements can still override the global defaults.
 `hf`, `semble`, and `trv` remain uv-managed tools; `rustlings` is Cargo-installed.
-Nix-darwin declares the remaining Homebrew inventory and migrates Homebrew itself
-to nix-homebrew management. Ghostty is already Nix-managed; other GUI apps remain
-casks pending individual migration checks.
+Nix supplies the shared CLI baseline and the Mini-specific CLI tools. `nvtop`
+remains a Homebrew formula because the pinned Nix package set has no Apple Silicon
+build. Nix-darwin declares the remaining Homebrew inventory and migrates Homebrew
+itself to nix-homebrew management. Ghostty is already Nix-managed; other GUI apps
+remain casks pending individual migration checks.
 
 Removing llama.cpp from the Brew declarations does not uninstall its existing copy
 because cleanup is disabled. After Home Manager activation, run `mise install`,
