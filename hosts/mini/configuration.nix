@@ -23,8 +23,8 @@
     onActivation = {
       autoUpdate = false;
       upgrade = false;
-      # Start non-destructively; tighten this after the inventory is stable.
-      cleanup = "none";
+      # Keep the cask inventory declarative without deleting application data.
+      cleanup = "uninstall";
     };
 
     casks = [

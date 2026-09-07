@@ -203,19 +203,18 @@ valid choice. Both approaches pin exact revisions in `flake.lock`; branches cont
 where future updates come from. Change the two inputs together when changing release
 tracks, and keep `home.stateVersion` unchanged unless deliberately migrating state.
 
-Homebrew formulas and casks are declared in `hosts/mini/configuration.nix` with
-activation cleanup disabled initially. This preserves installed software while the
-inventory settles; change cleanup deliberately only after reviewing the full list.
-Mise remains managed by Home Manager. The existing Linux/Stow setup below remains
-unchanged.
+Homebrew declares the Mac mini's remaining GUI casks in
+`hosts/mini/configuration.nix`. Activation uses `cleanup = "uninstall"`, so a
+future switch removes undeclared Homebrew formulas or casks but does not zap their
+application data. Mise remains managed by Home Manager. The existing Linux/Stow
+setup below remains unchanged.
 
 ### Migration status
 
-The first CLI batch is managed by Nix. Remove its global mise declarations only
-after successful activation and executable-path checks. Installed mise copies can
-remain temporarily for recovery; project-local mise declarations can still override
-the default provider. Package versions come from `flake.lock`, not the former mise
-selectors, including the former eza 0.23.4 pin.
+The first CLI batch is managed by Nix and its former global mise declarations have
+been removed. Project-local mise declarations can still override the default
+provider. Package versions come from `flake.lock`, not the former mise selectors,
+including the former eza 0.23.4 pin.
 
 | Tool | Migrated from mise | Current Nix version |
 | --- | --- | --- |
@@ -246,14 +245,12 @@ declares the remaining Homebrew cask inventory and migrates Homebrew itself to
 nix-homebrew management. Ghostty is already Nix-managed; other GUI apps remain
 casks pending individual migration checks.
 
-Removing llama.cpp from the Brew declarations does not uninstall its existing copy
-because cleanup is disabled. After Home Manager activation, run `mise install`,
-verify `mise which llama-server` and `llama-server --version`, then remove the
-old Brew formula with `brew uninstall llama.cpp` once the mise binaries work.
+llama.cpp is installed through mise and its `llama-server` binary has been
+verified. The former Homebrew formula was removed.
 
-The Mac mini's Git identity is declared in `hosts/mini/home.nix`. Home Manager
-activation may report an existing Git config conflict; reconcile/back up the old
-file rather than forcing an overwrite or discarding unrelated settings.
+The Mac mini's Git identity is declared in `hosts/mini/home.nix`. The existing
+`~/.gitconfig` mirrors that identity while preserving its global excludes file and
+default-branch setting.
 
 Home Manager installs mise itself from pinned nixpkgs and owns
 `~/.config/mise/config.toml`. Its `latest` declarations live in
