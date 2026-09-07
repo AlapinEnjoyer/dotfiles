@@ -17,13 +17,14 @@
       confirm-close-surface = false;
       copy-on-select = "clipboard";
       theme = "Monokai Classic";
-      background-opacity = 0.85;
+      background-opacity = 0.90;
       background-blur = true;
       cursor-style = "block";
       cursor-style-blink = false;
       shell-integration-features = "no-cursor, ssh-terminfo, ssh-env";
       font-family = "MartianMono Nerd Font";
       font-size = 18;
+      term = "xterm-256color";
       keybind = [
         "cmd+backspace=text:\\x15"
         "shift+enter=text:\\n"

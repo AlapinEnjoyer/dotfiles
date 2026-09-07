@@ -34,6 +34,9 @@
 
       homeConfigurations."ayrton@mini" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.aarch64-darwin;
+        extraSpecialArgs = {
+          user = "ayrton";
+        };
         modules = [ ./hosts/mini/home.nix ];
       };
     };

@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, user, ... }:
 
 {
   imports = [
@@ -7,9 +7,8 @@
     ../../modules/programs/ghostty.nix
   ];
 
-  # MUST match the local macOS account, not the flake's public label.
-  home.username = "ayrton";
-  home.homeDirectory = "/Users/ayrton";
+  home.username = user;
+  home.homeDirectory = "/Users/${user}";
 
   programs.home-manager.enable = true;
 
