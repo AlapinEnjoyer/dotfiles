@@ -5,6 +5,8 @@
     enable = true;
     # Keeps mise as the executable owner while satisfying Home Manager's package check.
     package = pkgs.emptyDirectory;
+    context = ./opencode/AGENTS.md;
+    agents.semble-search = ./opencode/agents/semble-search.md;
     settings = {
       username = "Pesto";
       model = "openai/gpt-5.6-luna";
@@ -112,7 +114,10 @@
 
   home.sessionVariables.OPENCODE_ENABLE_EXA = "1";
 
-  home.activation.removeLegacyOpencodeJsonc = lib.hm.dag.entryBefore [ "linkGeneration" ] ''
-    rm -f "$HOME/.config/opencode/opencode.jsonc"
+  home.activation.removeLegacyOpencodeFiles = lib.hm.dag.entryBefore [ "checkLinkTargets" ] ''
+    rm -f \
+      "$HOME/.config/opencode/opencode.jsonc" \
+      "$HOME/.config/opencode/AGENTS.md" \
+      "$HOME/.config/opencode/agents/semble-search.md"
   '';
 }
