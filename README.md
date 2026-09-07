@@ -9,7 +9,7 @@ The `ayrton@mini` configuration targets an Apple Silicon Mac mini. Shared Home
 Manager modules install the terminal packages and manage Zsh, Powerlevel10k,
 completions, tmux, Ghostty configuration and font, mise's global configuration,
 and user-level Nix settings.
-Homebrew applications and macOS system settings remain managed separately, except
+Homebrew applications and macOS system settings are managed by nix-darwin, except
 for Ghostty, which Home Manager installs from Nix.
 
 The Home Manager target is derived from the actual account and macOS local hostname
@@ -21,26 +21,31 @@ Nix must already be installed. Run these commands from this repository.
 ### Shared modules
 
 ```text
-hosts/mini/home.nix                 Account details and module imports
-modules/terminal/default.nix        Shared terminal entry point and Nix settings
-modules/terminal/packages.nix       General CLI packages
+hosts/mini/home.nix                 Account details, Home Manager enablement, and imports
+hosts/mini/configuration.nix         nix-darwin system and Homebrew configuration
+modules/terminal/default.nix        Shared CLI packages, terminal imports, and Nix settings
 modules/terminal/mise.nix           Mise installation, integration, and latest tools
 modules/terminal/tmux.nix           tmux package and native configuration
-modules/terminal/ghostty.nix        Ghostty settings and MartianMono Nerd Font
+modules/programs/ghostty.nix        Ghostty settings and MartianMono Nerd Font
 modules/terminal/zsh/default.nix    Zsh, prompt, plugins, history, and aliases
 modules/terminal/zsh/fzf.nix        Fzf integration, colors, and previews
 modules/terminal/zsh/functions.zsh  Custom functions and keybindings
 modules/terminal/zsh/completions/   Handwritten completion definitions
-modules/darwin/default.nix          Homebrew environment and completion path
+modules/terminal/zsh/homebrew.nix   Homebrew environment and completion path
 config/p10k.zsh                     Preserved Powerlevel10k configuration
 config/tmux.conf                    Preserved tmux configuration
 ```
 
-Both Macs should import `modules/terminal` and `modules/darwin`. A Linux host can
-import `modules/terminal` without the Darwin module, then add its own desktop
-settings. Only `mini` is configured and tested so far; add other flake outputs
-after confirming their account details and architecture. These are Home Manager
-modules, including the Darwin-specific one; nix-darwin is not installed yet.
+Both Macs should import `modules/terminal` and explicitly opt into
+`modules/terminal/zsh/homebrew.nix` for Homebrew shell integration. The mini also
+explicitly imports `modules/programs/ghostty.nix`; Ghostty is not part of the shared
+terminal bundle. A Linux host can import `modules/terminal`, then add its own
+desktop settings. Host modules own Home Manager enablement. Only `mini` is
+configured and tested so far; add other flake outputs after confirming their
+account details and architecture. These are Home Manager modules, including the
+Homebrew shell integration. The `darwinConfigurations` output owns
+macOS system configuration and Homebrew; the `homeConfigurations` output owns the
+user environment.
 The root `.zshrc` is retained as legacy configuration, not the source for the
 managed Mac shell. Shared shell changes belong in `modules/terminal/zsh`.
 
@@ -64,6 +69,23 @@ alongside the configuration to preserve the pinned inputs.
 The build does not change the active home configuration; `./result/activate` does.
 If activation reports an existing-file conflict, back up and reconcile that file
 rather than forcing an overwrite.
+
+### First nix-darwin activation
+
+Build the system first, then use its rebuild command to switch as root:
+
+```sh
+nix build '.#darwinConfigurations."ayrton@mini".system'
+sudo ./result/sw/bin/darwin-rebuild switch --flake '.#ayrton@mini'
+```
+
+This installs the nix-darwin system profile and gives subsequent shells the
+`darwin-rebuild` command. The switch command evaluates/builds the flake again;
+do not change the configuration between reviewing the build and switching.
+`just build-darwin-dry-run` previews builds/downloads only, not activation.
+This nix-darwin version does not provide an activation dry-run;
+the initial Homebrew activation uses `cleanup = "none"` and does not uninstall
+undeclared software.
 
 Open a new terminal and verify:
 
@@ -98,8 +120,11 @@ macOS's `LocalHostName`, avoiding the network-resolved value returned by `hostna
 | Command | Action |
 | --- | --- |
 | `just build-hm` | Build without activation |
+| `just build-darwin` | Build the nix-darwin system without activation |
 | `just switch-hm-dry-run` | Preview activation without applying it |
 | `just switch-hm` | Build and activate |
+| `just build-darwin-dry-run` | Preview required builds/downloads only |
+| `just switch-darwin` | Build and activate nix-darwin; requires `sudo` |
 | `just test-zsh` | Check the active shell in a new interactive Zsh; no model requests |
 | `just update` | Update the lock file; does not activate |
 | `just generations` | List Home Manager rollback generations |
@@ -107,7 +132,7 @@ macOS's `LocalHostName`, avoiding the network-resolved value returned by `hostna
 | `just optimise` | Hard-link identical store files to save space |
 
 For a future host, add its matching `user@LocalHostName` output to the flake and
-run the same recipe on that host. Darwin recipes will be added when nix-darwin is configured.
+run the same recipe on that host.
 
 Garbage collection does not delete profile generations. It can still remove
 unrooted development-shell dependencies and build outputs, requiring downloads or
@@ -119,8 +144,11 @@ valid choice. Both approaches pin exact revisions in `flake.lock`; branches cont
 where future updates come from. Change the two inputs together when changing release
 tracks, and keep `home.stateVersion` unchanged unless deliberately migrating state.
 
-Keep Homebrew and mise during migration. Add shared modules and other hosts only
-as needed; the existing Linux/Stow setup below remains unchanged.
+Homebrew formulas and casks are declared in `hosts/mini/configuration.nix` with
+activation cleanup disabled initially. This preserves installed software while the
+inventory settles; change cleanup deliberately only after reviewing the full list.
+Mise remains managed by Home Manager. The existing Linux/Stow setup below remains
+unchanged.
 
 ### Migration status
 
@@ -147,16 +175,28 @@ mise so selected project runtimes can still take precedence. Existing mise
 installations are retained for recovery; do not re-add global declarations for
 tools that Nix now owns unless deliberately changing that ownership.
 
-Mise manages Node, pnpm, Rust, OpenTofu, Terragrunt, OpenCode, gh, uv, and ffmpeg.
+Mise manages Node, pnpm, Rust, OpenTofu, Terragrunt, OpenCode, gh, uv, ffmpeg,
+and llama.cpp. The latter uses upstream's b-prefixed GitHub prerelease binaries.
 All global mise tool declarations use `latest` to track upstream releases rather
 than stable nixpkgs versions. Run `mise upgrade` to update installed versions;
 `latest` does not automatically upgrade tools at shell startup. Project-local
 version requirements can still override the global defaults.
 `hf`, `semble`, and `trv` remain uv-managed tools; `rustlings` is Cargo-installed.
-Homebrew and GUI apps are unchanged.
+Nix-darwin declares the remaining Homebrew inventory and migrates Homebrew itself
+to nix-homebrew management. Ghostty is already Nix-managed; other GUI apps remain
+casks pending individual migration checks.
+
+Removing llama.cpp from the Brew declarations does not uninstall its existing copy
+because cleanup is disabled. After Home Manager activation, run `mise install`,
+verify `mise which llama-server` and `llama-server --version`, then remove the
+old Brew formula with `brew uninstall llama.cpp` once the mise binaries work.
+
+The Mac mini's Git identity is declared in `hosts/mini/home.nix`. Home Manager
+activation may report an existing Git config conflict; reconcile/back up the old
+file rather than forcing an overwrite or discarding unrelated settings.
 
 Home Manager installs mise itself from pinned nixpkgs and owns
-`~/.config/mise/config.toml`. Its nine `latest` declarations live in
+`~/.config/mise/config.toml`. Its `latest` declarations live in
 `modules/terminal/mise.nix`; edit that module and run `just switch-hm` instead of
 `mise use -g`, which would try to modify the read-only generated config.
 Use `mise install` on a new host and `mise upgrade` for subsequent tool updates.
@@ -180,7 +220,7 @@ was copied unchanged; the laptop's prompt configuration was not available to com
 ### Ghostty ownership
 
 Home Manager installs and updates Ghostty through `pkgs.ghostty-bin` and owns
-`~/.config/ghostty/config` through `modules/terminal/ghostty.nix`, preserving the
+`~/.config/ghostty/config` through `modules/programs/ghostty.nix`, preserving the
 previous active settings except for the default font. Do not install a second
 Homebrew copy, Stow the legacy `ghostty/` directory on this Mac, or edit the
 generated config. Avoid a second config under
@@ -214,7 +254,7 @@ Completion directories are set before the single `compinit` invocation:
   `_ask`. Add files with a `#compdef command` header in the repository.
 - Nix profile completion directories supply definitions for Nix-managed commands.
 - Nix's zsh-completions package supplies additional definitions.
-- The macOS module adds Homebrew's completion directory for retained Brew tools.
+- `modules/terminal/zsh/homebrew.nix` adds Homebrew's completion directory for retained Brew tools.
 - Uv and gh generate completions from their active executables after
   `compinit`. No timestamp-based initialization cache is used.
 

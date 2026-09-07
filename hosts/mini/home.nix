@@ -1,12 +1,23 @@
 {
   imports = [
     ../../modules/terminal
-    ../../modules/darwin
+    ../../modules/terminal/zsh/homebrew.nix
+    ../../modules/programs/ghostty.nix
   ];
 
   # MUST match the local macOS account, not the flake's public label.
   home.username = "ayrton";
   home.homeDirectory = "/Users/ayrton";
+
+  programs.home-manager.enable = true;
+
+  programs.git = {
+    enable = true;
+    settings.user = {
+      name = "AlapinEnjoyer";
+      email = "120122957+AlapinEnjoyer@users.noreply.github.com";
+    };
+  };
 
   home.stateVersion = "26.05";
 }

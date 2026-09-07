@@ -1,13 +1,21 @@
+{ pkgs, ... }:
+
 {
   imports = [
-    ./packages.nix
     ./mise.nix
     ./tmux.nix
-    ./ghostty.nix
     ./zsh
   ];
 
-  programs.home-manager.enable = true;
+  home.packages = with pkgs; [
+    just
+    bat
+    fd
+    ripgrep
+    eza
+    glow
+  ];
+
   home.sessionPath = [ "$HOME/.local/bin" ];
 
   xdg.configFile."nix/nix.conf".text = ''
