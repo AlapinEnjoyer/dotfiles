@@ -10,7 +10,7 @@
     settings = {
       username = "Pesto";
       model = "openai/gpt-5.6-luna";
-      small_model = "opencode/muse-spark-1.3-contributor-free";
+      small_model = "opencode/mimo-v2.5-free";
 
       compaction.auto = false;
 
