@@ -20,7 +20,6 @@
     smartmontools
     talosctl
     tlrc
-    usage
   ];
 
   programs.git = {
