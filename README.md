@@ -7,8 +7,10 @@ existing Hyprland/Stow configuration.
 
 The `ayrton@mini` configuration targets an Apple Silicon Mac mini. Shared Home
 Manager modules install the terminal packages and manage Zsh, Powerlevel10k,
-completions, tmux, mise's global configuration, and user-level Nix settings.
-Homebrew applications and macOS system settings remain managed separately.
+completions, tmux, Ghostty configuration and font, mise's global configuration,
+and user-level Nix settings.
+Homebrew applications and macOS system settings remain managed separately, except
+for Ghostty, which Home Manager installs from Nix.
 
 The Home Manager target is derived from the actual account and macOS local hostname
 with `whoami` and `scutil --get LocalHostName`. The host module's `home.username`
@@ -24,6 +26,7 @@ modules/terminal/default.nix        Shared terminal entry point and Nix settings
 modules/terminal/packages.nix       General CLI packages
 modules/terminal/mise.nix           Mise installation, integration, and latest tools
 modules/terminal/tmux.nix           tmux package and native configuration
+modules/terminal/ghostty.nix        Ghostty settings and MartianMono Nerd Font
 modules/terminal/zsh/default.nix    Zsh, prompt, plugins, history, and aliases
 modules/terminal/zsh/fzf.nix        Fzf integration, colors, and previews
 modules/terminal/zsh/functions.zsh  Custom functions and keybindings
@@ -173,6 +176,29 @@ The laptop's functions, aliases, and history exclusions are the shared baseline.
 Its pipeline now propagates OpenCode failures. Model availability is provider-side
 and has not been tested with real requests. The mini's Powerlevel10k configuration
 was copied unchanged; the laptop's prompt configuration was not available to compare.
+
+### Ghostty ownership
+
+Home Manager installs and updates Ghostty through `pkgs.ghostty-bin` and owns
+`~/.config/ghostty/config` through `modules/terminal/ghostty.nix`, preserving the
+previous active settings except for the default font. Do not install a second
+Homebrew copy, Stow the legacy `ghostty/` directory on this Mac, or edit the
+generated config. Avoid a second config under
+`~/Library/Application Support/com.mitchellh.ghostty`, which can override settings.
+
+Nix installs `nerd-fonts.martian-mono`; the actual family is
+`MartianMono Nerd Font`. Pinned Home Manager automatically copies packaged fonts
+into `~/Library/Fonts/HomeManager` on macOS so GUI apps can discover them.
+To use MonoLisa later, install your licensed font separately and change
+`font-family` in the Nix module to `"MonoLisa"`, then switch. No proprietary font
+files belong in this repository or the Nix store.
+
+For the first handoff, build and dry-run before running
+`home-manager switch --flake '.#ayrton@mini' -b nix-ghostty-migration-backup`.
+First ensure `~/.config/ghostty/config.nix-ghostty-migration-backup` does not exist;
+use a fresh suffix if it does. Subsequent changes use `just switch-hm`.
+Reload Ghostty's configuration or open a new window and visually check the font,
+Nerd Font icons, theme, transparency, and Cmd-Backspace/Shift-Enter bindings.
 
 ### Shell and completion ownership
 

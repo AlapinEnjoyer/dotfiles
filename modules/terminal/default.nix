@@ -3,6 +3,7 @@
     ./packages.nix
     ./mise.nix
     ./tmux.nix
+    ./ghostty.nix
     ./zsh
   ];
 
