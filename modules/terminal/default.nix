@@ -3,7 +3,7 @@
 {
   imports = [
     ./mise.nix
-    ./opencode.nix
+    ./opencode
     ./tmux.nix
     ./zsh
   ];

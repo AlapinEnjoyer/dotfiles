@@ -5,8 +5,8 @@
     enable = true;
     # Keeps mise as the executable owner while satisfying Home Manager's package check.
     package = pkgs.emptyDirectory;
-    context = ./opencode/AGENTS.md;
-    agents.semble-search = ./opencode/agents/semble-search.md;
+    context = ./AGENTS.md;
+    agents.semble-search = ./agents/semble-search.md;
     settings = {
       username = "Pesto";
       model = "openai/gpt-5.6-luna";
@@ -36,7 +36,7 @@
         command = [
           "uvx"
           "--from"
-          "semble[mcp]"
+          "semble[mcp]==0.5.6"
           "semble"
         ];
         type = "local";

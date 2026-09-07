@@ -28,7 +28,7 @@ hosts/mini/configuration.nix         nix-darwin system and Homebrew configuratio
 modules/darwin/defaults.nix          Shared macOS Finder and Dock preferences
 modules/terminal/default.nix        Shared CLI packages, terminal imports, and Nix settings
 modules/terminal/mise.nix           Mise installation, integration, and latest tools
-modules/terminal/opencode.nix       OpenCode configuration and session environment
+modules/terminal/opencode/          OpenCode configuration, agent, and instructions
 modules/terminal/tmux.nix           tmux package and native configuration
 modules/programs/ghostty.nix        Ghostty settings and MartianMono Nerd Font
 modules/terminal/zsh/default.nix    Zsh, prompt, plugins, history, and aliases
