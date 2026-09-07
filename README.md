@@ -13,8 +13,10 @@ Homebrew applications and macOS system settings are managed by nix-darwin, excep
 for Ghostty, which Home Manager installs from Nix.
 
 The Home Manager target is derived from the actual account and macOS local hostname
-with `whoami` and `scutil --get LocalHostName`. The host module's `home.username`
-and `home.homeDirectory` must still match the actual local account.
+with `whoami` and `scutil --get LocalHostName`. The flake currently declares only
+`ayrton@mini`; the `user` value is passed into Home Manager and used to construct
+the account's `home.username` and `home.homeDirectory`, so it must match the actual
+local account.
 
 Nix must already be installed. Run these commands from this repository.
 See [macOS setup](docs/macos-setup.md) for the complete fresh-machine bootstrap,
@@ -40,8 +42,8 @@ config/p10k.zsh                     Preserved Powerlevel10k configuration
 config/tmux.conf                    Preserved tmux configuration
 ```
 
-Both Macs should import `modules/terminal` and explicitly opt into
-`modules/terminal/zsh/homebrew.nix` for Homebrew shell integration. The mini also
+The mini imports `modules/terminal` and explicitly opts into
+`modules/terminal/zsh/homebrew.nix` for Homebrew shell integration. It also
 explicitly imports `modules/programs/ghostty.nix`; Ghostty is not part of the shared
 terminal bundle. A Linux host can import `modules/terminal`, then add its own
 desktop settings. Host modules own Home Manager enablement. Only `mini` is
@@ -260,9 +262,10 @@ Home Manager installs mise itself from pinned nixpkgs and owns
 `~/.config/mise/config.toml`. Its `latest` declarations live in
 `modules/terminal/mise.nix`; edit that module and run `just switch-hm` instead of
 `mise use -g`, which would try to modify the read-only generated config.
-Use `mise install` on a new host and `mise upgrade` for subsequent tool updates.
-Home Manager activation does not install or upgrade mise-managed tools. Their
-versions are independent of the pinned mise executable (currently 2026.5.12).
+Home Manager activation runs `mise install --yes --cd /` after linking the
+configuration, so missing declared tools are installed on a new host. It does not
+upgrade already-installed tools; use `mise upgrade` for that. Their versions are
+independent of the pinned mise executable (currently 2026.5.12).
 Existing external mise installations are retained but are no longer the shell's
 default. Update mise itself through Nix, not `mise self-update`.
 
@@ -281,10 +284,10 @@ was copied unchanged; the laptop's prompt configuration was not available to com
 ### Ghostty ownership
 
 Home Manager installs and updates Ghostty through `pkgs.ghostty-bin` and owns
-`~/.config/ghostty/config` through `modules/programs/ghostty.nix`, preserving the
-previous active settings except for the default font. Do not install a second
-Homebrew copy, Stow the legacy `ghostty/` directory on this Mac, or edit the
-generated config. Avoid a second config under
+`~/.config/ghostty/config` through `modules/programs/ghostty.nix`. Edit the Nix
+module and run `just switch-hm`; do not edit the generated config. Do not install a
+second Homebrew copy or Stow the legacy `ghostty/` directory on this Mac. Avoid a
+second config under
 `~/Library/Application Support/com.mitchellh.ghostty`, which can override settings.
 
 Nix installs `nerd-fonts.martian-mono`; the actual family is
@@ -294,10 +297,7 @@ To use MonoLisa later, install your licensed font separately and change
 `font-family` in the Nix module to `"MonoLisa"`, then switch. No proprietary font
 files belong in this repository or the Nix store.
 
-For the first handoff, build and dry-run before running
-`home-manager switch --flake '.#ayrton@mini' -b nix-ghostty-migration-backup`.
-First ensure `~/.config/ghostty/config.nix-ghostty-migration-backup` does not exist;
-use a fresh suffix if it does. Subsequent changes use `just switch-hm`.
+The initial Ghostty handoff is complete. Subsequent changes use `just switch-hm`.
 Reload Ghostty's configuration or open a new window and visually check the font,
 Nerd Font icons, theme, transparency, and Cmd-Backspace/Shift-Enter bindings.
 
