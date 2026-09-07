@@ -17,6 +17,8 @@ with `whoami` and `scutil --get LocalHostName`. The host module's `home.username
 and `home.homeDirectory` must still match the actual local account.
 
 Nix must already be installed. Run these commands from this repository.
+See [macOS setup](docs/macos-setup.md) for the complete fresh-machine bootstrap,
+tool ownership model, update workflow, and non-declarative state.
 
 ### Shared modules
 
@@ -83,9 +85,9 @@ This installs the nix-darwin system profile and gives subsequent shells the
 `darwin-rebuild` command. The switch command evaluates/builds the flake again;
 do not change the configuration between reviewing the build and switching.
 `just build-darwin-dry-run` previews builds/downloads only, not activation.
-This nix-darwin version does not provide an activation dry-run;
-the initial Homebrew activation uses `cleanup = "none"` and does not uninstall
-undeclared software.
+This nix-darwin version does not provide an activation dry-run. Homebrew uses
+`cleanup = "uninstall"`, so review the declared cask inventory before activation;
+undeclared formulas and casks are removed without zapping their application data.
 
 If the first switch reports unexpected `/etc/bashrc` and `/etc/zshrc`, stop and
 review both files and `result/etc/{bashrc,zshenv,zprofile,zshrc}`, plus the store

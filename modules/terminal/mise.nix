@@ -1,3 +1,5 @@
+{ lib, config, ... }:
+
 {
   programs.mise = {
     enable = true;
@@ -20,4 +22,9 @@
       };
     };
   };
+
+  # Home Manager writes the global config; mise fetches missing configured tools.
+  home.activation.miseInstall = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+    ${config.home.profileDirectory}/bin/mise install --yes --cd /
+  '';
 }
