@@ -27,10 +27,6 @@
       cleanup = "none";
     };
 
-    brews = [
-      "nvtop"
-    ];
-
     casks = [
       "affinity"
       "anki"
