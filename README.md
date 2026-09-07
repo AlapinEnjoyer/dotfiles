@@ -25,6 +25,7 @@ tool ownership model, update workflow, and non-declarative state.
 ```text
 hosts/mini/home.nix                 Account details, Home Manager enablement, and imports
 hosts/mini/configuration.nix         nix-darwin system and Homebrew configuration
+modules/darwin/defaults.nix          Shared macOS Finder and Dock preferences
 modules/terminal/default.nix        Shared CLI packages, terminal imports, and Nix settings
 modules/terminal/mise.nix           Mise installation, integration, and latest tools
 modules/terminal/tmux.nix           tmux package and native configuration

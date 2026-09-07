@@ -22,6 +22,7 @@
           user = "ayrton";
         };
         modules = [
+          ./modules/darwin/defaults.nix
           ./hosts/mini/configuration.nix
           nix-homebrew.darwinModules.nix-homebrew
           {

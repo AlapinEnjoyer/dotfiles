@@ -47,7 +47,5 @@
     ];
   };
 
-  system.defaults.NSGlobalDomain.AppleShowAllExtensions = true;
-
   system.stateVersion = 6;
 }
