@@ -1,3 +1,5 @@
+{ pkgs, ... }:
+
 {
   imports = [
     ../../modules/terminal
@@ -11,6 +13,11 @@
   home.stateVersion = "26.05";
 
   programs.home-manager.enable = true;
+
+  home.packages = with pkgs; [
+    fastfetch
+    nvtopPackages.amd
+  ];
 
   # Same identity as the mini; preserves the existing default branch and editor.
   programs.git = {

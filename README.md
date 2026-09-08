@@ -433,7 +433,8 @@ No `hostname` executable is needed. Darwin recipes remain macOS-only.
 - `modules/linux/desktop.nix`: native Hyprland Lua, Hypridle, Hyprlock, Hyprpaper,
   Waybar, Rofi, Wlogout, fontconfig, wallpaper assets, and wallpaper script links.
 - Nix: Hyprland, Hyprshot, Ghostty, Rofi, Wlogout, Dolphin, Blueman, nm-applet, Hypridle, Hyprpaper,
-  brightnessctl, playerctl, pavucontrol, wpctl, script dependencies, fonts and icons.
+  brightnessctl, playerctl, pavucontrol, wpctl, terminal tools including `viu`, script dependencies,
+  fonts and icons.
 - Pacman/AUR: Waybar, Hyprlock/PAM, Zen, GPU/ROCm drivers and system services.
 - Wallpaper script: writable `~/.config/rofi/background.rasi` and cache index;
   Home Manager only seeds the background file when absent.

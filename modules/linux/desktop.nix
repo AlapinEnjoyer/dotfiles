@@ -4,6 +4,10 @@
   xdg.enable = lib.mkDefault true;
   fonts.fontconfig.enable = lib.mkDefault true;
 
+  dbus.packages = [ pkgs.blueman ];
+  xdg.configFile."systemd/user/blueman-manager.service".source =
+    "${pkgs.blueman}/share/systemd/user/blueman-manager.service";
+
   # User-space dependencies only; Arch still owns services, PAM and the session.
   # Waybar 0.15.0 sends legacy workspace dispatches rejected by Lua Hyprland.
   home.packages = with pkgs; [

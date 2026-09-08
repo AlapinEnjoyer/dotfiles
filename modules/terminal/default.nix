@@ -23,6 +23,9 @@
     opentofu
     terragrunt
     neovim
+    viu
+    tealdeer
+    wget
   ];
 
   # Multi-user Nix installs its daemon client outside the user profile.

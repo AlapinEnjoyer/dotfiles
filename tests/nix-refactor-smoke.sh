@@ -37,6 +37,8 @@ checks=$(nix eval --impure --json --expr '
       assert builtins.elem p.neovim c.home.packages;
       assert builtins.elem p.zsh c.home.packages;
       assert builtins.all (pkg: builtins.elem pkg c.home.packages) [ p.gh p.ffmpeg p.opentofu p.terragrunt ];
+      assert builtins.elem p.viu c.home.packages;
+      assert builtins.all (pkg: builtins.elem pkg c.home.packages) [ p.tealdeer p.wget ];
       assert !(c.xdg.configFile ? "nvim/init.lua");
       assert builtins.attrNames c.programs.mise.globalConfig.tools == [
         "github:ggml-org/llama.cpp" "node" "opencode" "pnpm" "rust" "uv"
@@ -65,6 +67,10 @@ checks=$(nix eval --impure --json --expr '
   assert shared uno && shared mini && shared cliOnly;
   assert builtins.elem uno.pkgs.hyprland uno.config.home.packages;
   assert builtins.elem uno.pkgs.hyprshot uno.config.home.packages;
+  assert builtins.elem uno.pkgs.blueman uno.config.dbus.packages;
+  assert uno.config.xdg.configFile ? "systemd/user/blueman-manager.service";
+  assert builtins.elem uno.pkgs.fastfetch uno.config.home.packages;
+  assert builtins.elem uno.pkgs.nvtopPackages.amd uno.config.home.packages;
   assert !(builtins.elem uno.pkgs.waybar uno.config.home.packages);
   assert builtins.any (pkg: (pkg.name or "") == "nixGL") uno.config.home.packages;
   assert !(mini.config.home.file ? ".local/bin/start-hyprland-nix");
