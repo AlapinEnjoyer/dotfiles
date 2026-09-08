@@ -19,7 +19,7 @@ semble find-related src/auth.py 42 ./my-project
 semble search "save model to disk" ./my-project --top-k 10
 ```
 
-The index is built on first run and cached automatically. If `semble` is not on `$PATH`, use `uvx --from "semble[mcp]==0.5.6" semble`.
+The index is built on first run and cached automatically. No standalone Semble installation is managed. For every CLI example above, replace `semble` with `uvx --from 'semble[mcp]==0.5.6' semble`, matching the direct pinned MCP command. Mise supplies uv/uvx; launch OpenCode from a mise-enabled shell. Do not run `semble install` or install another copy.
 
 ### Workflow
 

@@ -7,12 +7,12 @@
   xdg.configFile."zsh/completions".source = ./completions;
 
   programs.zoxide = {
-    enable = true;
+    enable = lib.mkDefault true;
     enableZshIntegration = true;
   };
 
   programs.zsh = {
-    enable = true;
+    enable = lib.mkDefault true;
     dotDir = config.home.homeDirectory;
     enableCompletion = true;
     autosuggestion.enable = true;
@@ -62,6 +62,8 @@
     '';
 
     shellAliases = {
+      vi = "nvim";
+      v = "nvim";
       ls = "eza --color=always --icons=always";
       ll = "eza --color=always --long --git --icons=always";
       la = "eza --color=always --long --git --icons=always -a";
@@ -75,8 +77,6 @@
       tg = "terragrunt";
       opc = "opencode";
       vsc = "code .";
-      vi = "nvim";
-      v = "nvim";
       pn = "pnpm";
       gs = "git status";
       ga = "git add";

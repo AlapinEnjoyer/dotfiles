@@ -1,7 +1,7 @@
 local mainMod = "SUPER"
 
 hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle" }))
-hl.bind("Print", hl.dsp.exec_cmd("hyprshot -m region")) -- fn + i for PRINT on gmk
+hl.bind("Print", hl.dsp.exec_cmd("hyprshot -m region -o ~/Pictures/Screenshots")) -- fn + i for PRINT on gmk
 hl.bind(mainMod .. " + SHIFT + L", hl.dsp.exec_cmd("hyprlock"))
 hl.bind(mainMod .. " + SHIFT + F", hl.dsp.exec_cmd("zen-browser"))
 hl.bind(mainMod .. " + SHIFT + W", hl.dsp.exec_cmd("~/.scripts/change-wallpaper.sh"))

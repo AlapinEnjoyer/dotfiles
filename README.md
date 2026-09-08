@@ -1,7 +1,6 @@
 # dotfiles
 
-Personal dotfiles, with an incremental Nix migration for macOS alongside the
-existing Hyprland/Stow configuration.
+Personal dotfiles, with Home Manager configurations for macOS and Arch Linux.
 
 ## macOS: Home Manager
 
@@ -13,7 +12,7 @@ Homebrew applications and macOS system settings are managed by nix-darwin, excep
 for Ghostty, which Home Manager installs from Nix.
 
 The Home Manager target is derived from the actual account and macOS local hostname
-with `whoami` and `scutil --get LocalHostName`. The flake currently declares only
+with `whoami` and `scutil --get LocalHostName`. The macOS target is
 `ayrton@mini`; the `user` value is passed into Home Manager and used to construct
 the account's `home.username` and `home.homeDirectory`, so it must match the actual
 local account.
@@ -42,18 +41,18 @@ config/p10k.zsh                     Preserved Powerlevel10k configuration
 config/tmux.conf                    Preserved tmux configuration
 ```
 
-The mini imports `modules/terminal` and explicitly opts into
-`modules/terminal/zsh/homebrew.nix` for Homebrew shell integration. It also
-explicitly imports `modules/programs/ghostty.nix`; Ghostty is not part of the shared
-terminal bundle. A Linux host can import `modules/terminal`, then add its own
-desktop settings. Host modules own Home Manager enablement. Only `mini` is
-configured and tested so far; add other flake outputs after confirming their
-account details and architecture. These are Home Manager modules, including the
+Both Mini and Uno import `modules/terminal`, which composes independently
+importable CLI program modules and shared `home.packages`, including Neovim.
+Neovim's aliases live in the shared Zsh module; its config is not managed. Each host separately imports
+`modules/programs/ghostty.nix`; Ghostty is not part of the shared CLI bundle.
+Program defaults can be overridden by hosts without copying the shared settings. Only Mini opts into
+`modules/terminal/zsh/homebrew.nix` for Homebrew shell integration. Host modules own Home
+Manager enablement. These are Home Manager modules, including the
 Homebrew shell integration. The `darwinConfigurations` output owns
 macOS system configuration and Homebrew; the `homeConfigurations` output owns the
 user environment.
 The root `.zshrc` is retained as legacy configuration, not the source for the
-managed Mac shell. Shared shell changes belong in `modules/terminal/zsh`.
+managed shell on either host. Shared shell changes belong in `modules/terminal/zsh`.
 
 ### First activation
 
@@ -61,16 +60,15 @@ Build using the pinned Home Manager input, without needing Home Manager installe
 beforehand:
 
 ```sh
-git add flake.nix hosts/mini/home.nix modules config/tmux.conf config/p10k.zsh
 nix --extra-experimental-features 'nix-command flakes' build \
-  '.#homeConfigurations."ayrton@mini".activationPackage'
+  'path:.#homeConfigurations."ayrton@mini".activationPackage'
 ./result/activate
 ```
 
-Git-backed flakes omit untracked files, so stage the new Nix files before building.
-Staging does not create a commit. Keep tracked files free of secrets: flake source
-is copied into the Nix store. Stage the generated `flake.lock` and commit it
-alongside the configuration to preserve the pinned inputs.
+`path:.` includes new modules and package expressions without staging or committing.
+Review the tree for secrets first: path flakes can include ignored and untracked
+files in the Nix store. Once all sources are tracked, use the ordinary `.#...`
+reference. Keep the existing `flake.lock` unless deliberately updating inputs.
 
 The build does not change the active home configuration; `./result/activate` does.
 If activation reports an existing-file conflict, back up and reconcile that file
@@ -212,8 +210,8 @@ tracks, and keep `home.stateVersion` unchanged unless deliberately migrating sta
 Homebrew declares the Mac mini's remaining GUI casks in
 `hosts/mini/configuration.nix`. Activation uses `cleanup = "zap"`, so a future
 switch removes undeclared Homebrew formulas or casks and Homebrew-defined cask
-data. Mise remains managed by Home Manager. The existing Linux/Stow setup below
-remains unchanged.
+data. Mise remains managed by Home Manager on macOS. The Linux handoff below is
+separate and does not change Darwin configuration.
 
 ### Migration status
 
@@ -239,13 +237,17 @@ mise so selected project runtimes can still take precedence. Existing mise
 installations are retained for recovery; do not re-add global declarations for
 tools that Nix now owns unless deliberately changing that ownership.
 
-Mise manages Node, pnpm, Rust, OpenTofu, Terragrunt, OpenCode, gh, uv, ffmpeg,
-and llama.cpp. The latter uses upstream's b-prefixed GitHub prerelease binaries.
+Nix is the default package owner. It now also supplies Neovim on both hosts,
+OpenTofu, Terragrunt, gh, and ffmpeg. Mise supplies OpenCode and uv at `latest`,
+project runtimes (Node, pnpm, Rust), and llama.cpp, whose declaration
+selects upstream's b-prefixed GitHub prerelease binaries.
 All global mise tool declarations use `latest` to track upstream releases rather
 than stable nixpkgs versions. Run `mise upgrade` to update installed versions;
 `latest` does not automatically upgrade tools at shell startup. Project-local
 version requirements can still override the global defaults.
-`hf`, `semble`, and `trv` remain uv-managed tools; `rustlings` is Cargo-installed.
+Older imperative `hf`, `trv`, and Cargo-installed `rustlings` are not reproduced
+by this flake; they are migration leftovers, not additional preferred managers.
+Semble uses pinned uvx execution, not a standalone install; see [Semble and OpenCode](#semble-and-opencode).
 Nix supplies the shared CLI baseline and the Mini-specific CLI tools. Nix-darwin
 declares the remaining Homebrew cask inventory and migrates Homebrew itself to
 nix-homebrew management. Ghostty is already Nix-managed; other GUI apps remain
@@ -263,7 +265,8 @@ Home Manager installs mise itself from pinned nixpkgs and owns
 `modules/terminal/mise.nix`; edit that module and run `just switch-hm` instead of
 `mise use -g`, which would try to modify the read-only generated config.
 Home Manager activation runs `mise install --yes --cd /` after linking the
-configuration, so missing declared tools are installed on a new host. It does not
+configuration using Home Manager's dry-run-aware `run` helper. Dry runs do not
+install tools, and no extra `reshim` is needed after `mise install`. It does not
 upgrade already-installed tools; use `mise upgrade` for that. Their versions are
 independent of the pinned mise executable (currently 2026.5.12).
 Existing external mise installations are retained but are no longer the shell's
@@ -273,7 +276,39 @@ The shared shell replaces Zinit with Nix-packaged Powerlevel10k, zsh-completions
 fzf-tab, autosuggestions, and syntax highlighting. Existing Zinit files are left on
 disk but are no longer sourced or updated at startup. Fzf and zoxide integration
 each have one owner in Home Manager, as does mise activation. Nix supplies mise's
-completion; uv/gh completion generation remains explicit for mise-managed tools.
+completion; uv/gh completion generation remains explicit for their active executables.
+
+### Semble and OpenCode
+
+Mise installs OpenCode and uv at `latest`; OpenCode self-updates remain disabled
+so `mise upgrade` owns updates. `programs.opencode.package = pkgs.emptyDirectory`
+works around a pinned Home Manager warning bug with `package = null`. The empty
+package installs no binary; Home Manager manages only configuration, instructions,
+and the subagent in `modules/terminal/opencode/`.
+
+MCP directly runs `uvx --from 'semble[mcp]==0.5.6' semble`. CLI fallback uses
+the same prefix, for example:
+
+```sh
+uvx --from 'semble[mcp]==0.5.6' semble search "authentication flow" .
+```
+
+Launch OpenCode from a mise-enabled Zsh so `uvx` is on its inherited PATH.
+The previous launcher provided absolute uv/Python paths for noninteractive MCP
+startup and a process-local C++ library path for NumPy under Nix Python. That
+addressed runtime discovery but was unnecessary custom packaging for this setup;
+the direct command no longer forces Nix Python. Initial execution needs network
+access and resolves Python dependencies into uv's cache, not a fully locked/offline
+environment. Model/indexing behavior still needs runtime verification.
+Do not run `semble install`, `uv tool install`, or `uv tool upgrade semble` for
+this integration. Update the pin in the MCP config and both instruction templates
+together. Existing standalone copies are neither used by MCP nor deleted here.
+
+Legacy `opencode.jsonc` is never deleted automatically: activation stops if it
+exists, including a dangling link. Review and back it up outside the config
+directory, merging desired settings into Nix first. Home Manager's normal conflict
+checks protect unmanaged `AGENTS.md` and agent files. After a future activation,
+quit and restart OpenCode to load the new configuration.
 
 The laptop's functions, aliases, and history exclusions are the shared baseline.
 `ask` uses the laptop's model list/default and preserves separate CLI arguments.
@@ -283,11 +318,12 @@ was copied unchanged; the laptop's prompt configuration was not available to com
 
 ### Ghostty ownership
 
-Home Manager installs and updates Ghostty through `pkgs.ghostty-bin` and owns
+Home Manager installs and updates Ghostty through `pkgs.ghostty-bin` on Darwin
+and `pkgs.ghostty` on Linux, and owns
 `~/.config/ghostty/config` through `modules/programs/ghostty.nix`. Edit the Nix
 module and run `just switch-hm`; do not edit the generated config. Do not install a
-second Homebrew copy or Stow the legacy `ghostty/` directory on this Mac. Avoid a
-second config under
+second Homebrew copy or create a separate file-backed Ghostty configuration on this
+Mac. Avoid a second config under
 `~/Library/Application Support/com.mitchellh.ghostty`, which can override settings.
 
 Nix installs `nerd-fonts.martian-mono`; the actual family is
@@ -303,11 +339,13 @@ Nerd Font icons, theme, transparency, and Cmd-Backspace/Shift-Enter bindings.
 
 ### Shell and completion ownership
 
-Home Manager owns `~/.zshrc`, `~/.zshenv`, `~/.zprofile` on macOS, and `~/.p10k.zsh`.
+Home Manager owns `~/.zshrc`, `~/.zshenv`, `~/.zprofile`, and `~/.p10k.zsh` on both hosts.
 Edit the repository and switch, rather than editing the generated symlinks. Avoid
 running `p10k configure` against the immutable managed file; make prompt changes
-in `config/p10k.zsh`. The account's login shell remains `/bin/zsh`; installing Nix's
-Zsh does not change it. Both shells should load the same managed home configuration.
+in `config/p10k.zsh`. Mini's login shell remains `/bin/zsh`; Uno's is already
+`/usr/bin/zsh`, registered in `/etc/shells`. Home Manager installs Nix Zsh but
+does not change the login shell. Both load the managed home configuration; see
+[Arch setup](docs/linux-setup.md#login-shell) for an optional Nix login-shell handoff.
 
 Completion directories are set before the single `compinit` invocation:
 
@@ -374,34 +412,66 @@ shell versions, but a rollback to before the first shell handoff does not recrea
 the original unmanaged files: those require the backups. Do not run garbage
 collection or delete old generations until the migration is stable.
 
-## Linux: Existing Hyprland Setup
+## Linux: Arch Home Manager
 
-## Prerequisites
+`homeConfigurations."ayrton@uno"` targets `/home/ayrton` on `x86_64-linux`.
+Home Manager owns shared terminal tools, native desktop configuration, and the
+declared user-space desktop packages. Arch still owns the system/session stack.
+Follow [Arch setup](docs/linux-setup.md) for bootstrap, build review,
+activation, and recovery. The source-only cleanup is complete; desktop text
+sources are consolidated under `config/`.
 
-Install a nerd font for icon support. For example MartianMono Nerd Font:
-- Extract to `/usr/share/fonts`
-- Update cache: `fc-cache -fv`
+`just` selects the account with `whoami`, and the hostname with
+`hostnamectl --static` on Linux or `scutil --get LocalHostName` on macOS.
+No `hostname` executable is needed. Darwin recipes remain macOS-only.
 
-### Install yay (if not already installed)
+### Ownership
 
-```zsh
-sudo pacman -S --needed base-devel git
-git clone https://aur.archlinux.org/yay.git
-cd yay && makepkg -si && cd .. && rm -rf yay
-```
+- `hosts/uno/home.nix`: account, state version, and explicit terminal/Ghostty/desktop imports.
+- `modules/terminal`: shared Zsh, Powerlevel10k, tmux, mise, OpenCode, and CLI tools.
+- `modules/programs/ghostty.nix`: shared Ghostty settings and font.
+- `modules/linux/desktop.nix`: native Hyprland Lua, Hypridle, Hyprlock, Hyprpaper,
+  Waybar, Rofi, Wlogout, fontconfig, wallpaper assets, and wallpaper script links.
+- Nix: Hyprland, Hyprshot, Ghostty, Rofi, Wlogout, Dolphin, Blueman, nm-applet, Hypridle, Hyprpaper,
+  brightnessctl, playerctl, pavucontrol, wpctl, script dependencies, fonts and icons.
+- Pacman/AUR: Waybar, Hyprlock/PAM, Zen, GPU/ROCm drivers and system services.
+- Wallpaper script: writable `~/.config/rofi/background.rasi` and cache index;
+  Home Manager only seeds the background file when absent.
 
-## Installation
+Native desktop text sources live in `config/hypr`, `config/waybar`, `config/rofi`,
+`config/wlogout`, and `config/fontconfig`; the wallpaper script is
+`scripts/change-wallpaper.sh`. Wallpaper and Wlogout icon binaries remain in their
+existing asset directories.
 
-Install all packages:
+### Desktop Packages
 
-```zsh
-yay -S stow blueman hypridle hyprlock hyprpaper hyprland hyprshot ghostty dolphin zen-browser-bin rofi-wayland waybar fastfetch brightnessctl wlogout fzf eza bat fd ripgrep noto-fonts-emoji mise networkmanager network-manager-applet
-```
+Prefer the packages declared in `modules/linux/desktop.nix`, not a second broad
+`yay -S` list. Keep existing Arch copies for recovery until the Nix generation is
+validated. Home Manager has been activated on Uno, but it neither uninstalls Arch
+packages nor replaces the running graphical session.
 
-Clone and stow:
+Pinned Hyprland 0.55.4 builds with Lua 5.5 and passed `Hyprland --verify-config`
+against the complete `config/hypr/hyprland.lua`. It and Hyprshot 1.3.0 are now
+declared in Uno's Nix packages. Hyprshot's wrapper uses the matching Nix `hyprctl`;
+its script only queries JSON monitors/clients/active workspace/window, not legacy
+dispatch commands. This removes the previous unsupported version-coupling claim.
 
-```zsh
-git clone https://github.com/AlapinEnjoyer/dotfiles.git
-cd dotfiles
-stow backgrounds conf fontconfig ghostty hypridle hyprland hyprlock hyprpaper waybar rofi scripts wlogout
-```
+Waybar 0.15.0 is available but its `src/modules/hyprland/workspace.cpp` sends
+`dispatch workspace ...` (and legacy special-workspace variants) for built-in
+workspace clicks. Hyprland 0.55.4's `src/debug/HyprCtl.cpp:1107` interprets dispatch
+as Lua `hl.dispatch(...)`; those legacy strings fail. Keep the installed
+`waybar-git 0.15.0.r1004.g6d60c8e-1` until a Lua-aware Nix version is pinned,
+rather than patching the package here. Its installed source translates built-in
+clicks to Lua. Explicit scroll commands and Hypridle DPMS commands now use Lua
+dispatcher expressions as well.
+Hyprlock stays with Arch's PAM integration; Zen has no package in this pinned
+nixpkgs set. Installing Hyprland in a home profile does not select a display-manager
+session or replace Arch's running 0.56.2 compositor. Review session discovery and
+test a fresh session before handoff; existing Arch packages remain installed.
+
+Uno now imports `modules/linux/session.nix`: pinned nixGL Mesa using the same
+nixpkgs, a Nix session launcher, and separate Nix/explicit Arch-fallback desktop
+entries. Hardware-rendered EGL/GLX checks passed on its RX 9070; a fresh login and
+full desktop testing remain necessary. Arch kernel/GPU/ROCm packages are untouched,
+and macOS does not import this integration. See [session handoff](docs/linux-setup.md#session-handoff)
+for the administrator installation commands and recovery procedure.

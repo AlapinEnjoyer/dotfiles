@@ -17,6 +17,11 @@
     glow
     btop
     ncdu
+    gh
+    ffmpeg
+    opentofu
+    terragrunt
+    neovim
   ];
 
   home.sessionPath = [ "$HOME/.local/bin" ];

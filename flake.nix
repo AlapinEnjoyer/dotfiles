@@ -12,9 +12,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
+    nixgl = {
+      url = "github:nix-community/nixGL";
+      flake = false;
+    };
   };
 
-  outputs = { nixpkgs, home-manager, darwin, nix-homebrew, ... }:
+  outputs = { nixpkgs, home-manager, darwin, nix-homebrew, nixgl, ... }:
     {
       darwinConfigurations."ayrton@mini" = darwin.lib.darwinSystem {
         system = "aarch64-darwin";
@@ -30,6 +34,12 @@
             nix.enable = false;
           }
         ];
+      };
+
+      homeConfigurations."ayrton@uno" = home-manager.lib.homeManagerConfiguration {
+        pkgs = nixpkgs.legacyPackages.x86_64-linux;
+        extraSpecialArgs = { inherit nixgl; };
+        modules = [ ./hosts/uno/home.nix ];
       };
 
       homeConfigurations."ayrton@mini" = home-manager.lib.homeManagerConfiguration {

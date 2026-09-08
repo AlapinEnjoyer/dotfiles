@@ -1,23 +1,24 @@
-{ pkgs, ... }:
+{ lib, pkgs, ... }:
 
 {
-  # Home Manager copies packaged fonts to ~/Library/Fonts/HomeManager on macOS.
   home.packages = [ pkgs.nerd-fonts.martian-mono ];
 
   programs.ghostty = {
-    enable = true;
-    package = pkgs.ghostty-bin;
-    systemd.enable = false;
+    enable = lib.mkDefault true;
+    package = lib.mkDefault (
+      if pkgs.stdenv.hostPlatform.isDarwin then pkgs.ghostty-bin else pkgs.ghostty
+    );
+    systemd.enable = lib.mkDefault false;
     # Keep Ghostty's automatic shell integration rather than adding shell hooks.
-    enableBashIntegration = false;
-    enableFishIntegration = false;
-    enableZshIntegration = false;
+    enableBashIntegration = lib.mkDefault false;
+    enableFishIntegration = lib.mkDefault false;
+    enableZshIntegration = lib.mkDefault false;
 
-    settings = {
+    settings = lib.mapAttrs (_: lib.mkDefault) {
       confirm-close-surface = false;
       copy-on-select = "clipboard";
       theme = "Monokai Classic";
-      background-opacity = 0.90;
+      background-opacity = 0.9;
       background-blur = true;
       cursor-style = "block";
       cursor-style-blink = false;
@@ -25,10 +26,9 @@
       font-family = "MartianMono Nerd Font";
       font-size = 18;
       term = "xterm-256color";
-      keybind = [
-        "cmd+backspace=text:\\x15"
-        "shift+enter=text:\\n"
-      ];
+      keybind = [ "shift+enter=text:\\n" ]
+        ++ lib.optional pkgs.stdenv.hostPlatform.isDarwin "cmd+backspace=text:\\x15";
+      env = [ "OPENCODE_ENABLE_EXA=1" ];
     };
   };
 }

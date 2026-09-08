@@ -14,3 +14,12 @@ hl.config({
         },
     },
 })
+
+hl.config({
+    cursor = {
+        -- Use the system XCursor theme instead of Hyprland's embedded
+        -- hyprcursor theme: the installed Adwaita ships no hyprcursor data,
+        -- so the embedded Hyprland theme would win otherwise.
+        enable_hyprcursor = false,
+    },
+})

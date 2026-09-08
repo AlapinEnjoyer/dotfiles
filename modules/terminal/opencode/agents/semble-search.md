@@ -33,7 +33,7 @@ semble find-related src/auth.py 42 ./my-project
 
 `path` defaults to the current directory when omitted; git URLs are accepted.
 
-If `semble` is not on `$PATH`, use `uvx --from "semble[mcp]==0.5.6" semble` in its place.
+No standalone Semble installation is managed. For every CLI example above, replace `semble` with `uvx --from 'semble[mcp]==0.5.6' semble`, matching the direct pinned MCP command. Mise supplies uv/uvx; use a mise-enabled shell rather than installing another copy. Do not run `semble install`.
 
 ### Workflow
 

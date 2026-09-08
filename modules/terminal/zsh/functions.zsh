@@ -35,7 +35,6 @@ _fzf_comprun() {
 _ask_models=(
   opencode/gpt-5.6-luna
   openai/gpt-5.6-luna
-  opencode/deepseek-v4-flash-free
   github-copilot/gpt-5.6-luna
 )
 

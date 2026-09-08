@@ -1,13 +1,18 @@
-{ lib, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   programs.opencode = {
-    enable = true;
-    # Keeps mise as the executable owner while satisfying Home Manager's package check.
+    enable = lib.mkDefault true;
+    # mise owns the executable for bleeding-edge updates; this empty package
+    # satisfies Home Manager without installing a second opencode binary.
+    # package = null would be cleaner but hits an upstream bug in
+    # release-26.05 (lib.versionAtLeast null "1.2.15" in warnings).
     package = pkgs.emptyDirectory;
     context = ./AGENTS.md;
     agents.semble-search = ./agents/semble-search.md;
     settings = {
+      "$schema" = "https://opencode.ai/config.json";
+      autoupdate = false;
       username = "Pesto";
       model = "openai/gpt-5.6-luna";
       small_model = "opencode/mimo-v2.5-free";
@@ -33,12 +38,7 @@
       };
 
       mcp.semble = {
-        command = [
-          "uvx"
-          "--from"
-          "semble[mcp]==0.5.6"
-          "semble"
-        ];
+        command = [ "uvx" "--from" "semble[mcp]==0.5.6" "semble" ];
         type = "local";
         enabled = true;
       };
@@ -53,6 +53,7 @@
           "gpt-5.6-luna"
           "gpt-5.6-terra"
           "gpt-5.6-sol"
+          "gpt-6-astra"
         ];
         google.whitelist = [
           "gemma-4-26b-it"
@@ -114,10 +115,15 @@
 
   home.sessionVariables.OPENCODE_ENABLE_EXA = "1";
 
-  home.activation.removeLegacyOpencodeFiles = lib.hm.dag.entryBefore [ "checkLinkTargets" ] ''
-    rm -f \
-      "$HOME/.config/opencode/opencode.jsonc" \
-      "$HOME/.config/opencode/AGENTS.md" \
-      "$HOME/.config/opencode/agents/semble-search.md"
-  '';
+  # JSONC was never owned by this module; it can override the generated JSON.
+  # Let Home Manager handle conflicts for AGENTS.md and the subagent normally.
+  home.activation.checkLegacyOpencodeConfig = lib.mkIf config.programs.opencode.enable (
+    lib.hm.dag.entryBefore [ "checkLinkTargets" ] ''
+      legacy=${lib.escapeShellArg "${config.xdg.configHome}/opencode/opencode.jsonc"}
+      if [ -e "$legacy" ] || [ -L "$legacy" ]; then
+        printf 'Reconcile and back up %s outside the OpenCode config directory before activation. No files were removed.\n' "$legacy" >&2
+        exit 1
+      fi
+    ''
+  );
 }

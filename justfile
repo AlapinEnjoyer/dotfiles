@@ -1,4 +1,4 @@
-hostname := shell('scutil --get LocalHostName')
+hostname := if os() == "macos" { shell('scutil --get LocalHostName') } else { shell('hostnamectl --static') }
 user := shell('whoami')
 
 # List the available recipes and their descriptions.

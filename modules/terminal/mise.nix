@@ -2,18 +2,14 @@
 
 {
   programs.mise = {
-    enable = true;
+    enable = lib.mkDefault true;
     enableZshIntegration = true;
     globalConfig.tools = {
+      uv = "latest";
+      opencode = "latest";
       node = "latest";
       pnpm = "latest";
       rust = "latest";
-      opentofu = "latest";
-      terragrunt = "latest";
-      opencode = "latest";
-      gh = "latest";
-      uv = "latest";
-      ffmpeg = "latest";
       # Upstream publishes binary builds as b-prefixed prereleases.
       "github:ggml-org/llama.cpp" = {
         version = "latest";
@@ -24,7 +20,9 @@
   };
 
   # Home Manager writes the global config; mise fetches missing configured tools.
-  home.activation.miseInstall = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
-    ${config.home.profileDirectory}/bin/mise install --yes --cd /
-  '';
+  home.activation.miseInstall = lib.mkIf config.programs.mise.enable (
+    lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+      run ${lib.getExe config.programs.mise.package} install --yes --cd /
+    ''
+  );
 }
