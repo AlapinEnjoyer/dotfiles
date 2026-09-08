@@ -25,7 +25,7 @@ in
     '';
   };
 
-  # SDDM does not discover home-profile sessions. Install these reviewed files
+  # SDDM does not discover home-profile sessions. Install this reviewed file
   # into /usr/local/share/wayland-sessions explicitly as an administrator.
   xdg.dataFile."wayland-sessions/hyprland-nix.desktop".text = ''
     [Desktop Entry]
@@ -33,16 +33,6 @@ in
     Comment=Home Manager session with Nix Mesa
     Exec=${config.home.homeDirectory}/.local/bin/start-hyprland-nix
     TryExec=${config.home.homeDirectory}/.local/bin/start-hyprland-nix
-    Type=Application
-    DesktopNames=Hyprland
-  '';
-
-  xdg.dataFile."wayland-sessions/hyprland-arch-fallback.desktop".text = ''
-    [Desktop Entry]
-    Name=Hyprland (Arch fallback)
-    Comment=Arch compositor and desktop utilities with the shared configuration
-    Exec=/usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/bin /usr/bin/start-hyprland --no-nixgl --path /usr/bin/Hyprland
-    TryExec=/usr/bin/start-hyprland
     Type=Application
     DesktopNames=Hyprland
   '';

@@ -465,13 +465,12 @@ rather than patching the package here. Its installed source translates built-in
 clicks to Lua. Explicit scroll commands and Hypridle DPMS commands now use Lua
 dispatcher expressions as well.
 Hyprlock stays with Arch's PAM integration; Zen has no package in this pinned
-nixpkgs set. Installing Hyprland in a home profile does not select a display-manager
-session or replace Arch's running 0.56.2 compositor. Review session discovery and
-test a fresh session before handoff; existing Arch packages remain installed.
+nixpkgs set. The Home Manager session is the daily driver; the Arch Hyprland
+package and its duplicated desktop utilities were removed after validation,
+and recovery is via TTY, older Home Manager generations, or Timeshift.
 
 Uno now imports `modules/linux/session.nix`: pinned nixGL Mesa using the same
-nixpkgs, a Nix session launcher, and separate Nix/explicit Arch-fallback desktop
-entries. Hardware-rendered EGL/GLX checks passed on its RX 9070; a fresh login and
-full desktop testing remain necessary. Arch kernel/GPU/ROCm packages are untouched,
+nixpkgs and a Nix session launcher with its SDDM desktop entry.
+Hardware-rendered EGL/GLX checks passed on its RX 9070; Arch kernel/GPU/ROCm packages are untouched,
 and macOS does not import this integration. See [session handoff](docs/linux-setup.md#session-handoff)
 for the administrator installation commands and recovery procedure.

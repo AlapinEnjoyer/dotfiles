@@ -70,7 +70,6 @@ checks=$(nix eval --impure --json --expr '
   assert !(mini.config.home.file ? ".local/bin/start-hyprland-nix");
   assert lib.hasInfix (builtins.unsafeDiscardStringContext "--path ${uno.pkgs.hyprland}/bin/Hyprland") uno.config.home.file.".local/bin/start-hyprland-nix".text;
   assert lib.hasInfix "${uno.config.home.profileDirectory}/share:/usr/local/share:/usr/share" uno.config.home.file.".local/bin/start-hyprland-nix".text;
-  assert lib.hasInfix "--no-nixgl --path /usr/bin/Hyprland" uno.config.xdg.dataFile."wayland-sessions/hyprland-arch-fallback.desktop".text;
   assert !cliOnly.config.programs.ghostty.enable;
   assert uno.config.programs.ghostty.enable && mini.config.programs.ghostty.enable;
   assert uno.config.programs.ghostty.package == uno.pkgs.ghostty;

@@ -17,6 +17,7 @@
     glow
     btop
     ncdu
+    jq
     gh
     ffmpeg
     opentofu

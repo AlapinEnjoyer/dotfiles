@@ -95,36 +95,29 @@ but their full runtime behavior still needs testing with inherited graphics path
 
 ### Session Handoff
 
-Home Manager creates `~/.local/bin/start-hyprland-nix` and two desktop entries under
+Home Manager creates `~/.local/bin/start-hyprland-nix` and one desktop entry under
 `~/.local/share/wayland-sessions`. The Nix launcher sources Home Manager variables,
 sets profile-first `PATH` and `XDG_DATA_DIRS`, and pins the watchdog's compositor
 path. Hyprland's watchdog automatically invokes the supplied `nixGL` wrapper.
-For Nix GPU apps launched from the old Arch session, use `nixGL ghostty` explicitly.
+For Nix GPU apps launched from another session, use `nixGL ghostty` explicitly.
 
 SDDM only scans system session directories here. After building and activating
-Home Manager, install the two reviewed entries as root (these names must not
-already exist; inspect them instead if either preflight fails):
+Home Manager, install the reviewed entry as root (this name must not
+already exist; inspect it instead if either preflight fails):
 
 ```sh
 test ! -e /usr/local/share/wayland-sessions/hyprland-nix.desktop && \
 test ! -L /usr/local/share/wayland-sessions/hyprland-nix.desktop && \
-test ! -e /usr/local/share/wayland-sessions/hyprland-arch-fallback.desktop && \
-test ! -L /usr/local/share/wayland-sessions/hyprland-arch-fallback.desktop && \
 sudo install -D -m 644 "$HOME/.local/share/wayland-sessions/hyprland-nix.desktop" \
-  /usr/local/share/wayland-sessions/hyprland-nix.desktop && \
-sudo install -D -m 644 "$HOME/.local/share/wayland-sessions/hyprland-arch-fallback.desktop" \
-  /usr/local/share/wayland-sessions/hyprland-arch-fallback.desktop
+  /usr/local/share/wayland-sessions/hyprland-nix.desktop
 ```
 
-These are root-owned copies, not root services executing user-controlled code.
+This is a root-owned copy, not a root service executing user-controlled code.
 The Nix entry starts the user-owned launcher as the logged-in user. Future launcher
 changes follow Home Manager automatically; desktop-entry changes need recopying.
 No packaged session entry is overwritten. Do not restart SDDM inside your session.
-Save work, log out normally, and select **Hyprland (Nix)**. If the new entries do
-not appear, reboot after saving work. Keep **Hyprland (Arch fallback)** available:
-it pins `/usr/bin/Hyprland` and an Arch-first utility PATH. The original Arch entry
-does not guarantee this, because `/usr/bin/start-hyprland` resolves its child through
-the inherited PATH. Both entries use the same Home Manager-managed config.
+Save work, log out normally, and select **Hyprland (Nix)**. If the new entry does
+not appear, reboot after saving work. The entry uses the Home Manager-managed config.
 
 After logging in, verify the running executable rather than only `command -v`:
 
@@ -137,8 +130,11 @@ hyprctl configerrors
 The Nix session should show a `/nix/store/...hyprland.../bin/.Hyprland-wrapped`
 executable and version 0.55.4 at the current pin. Inspect desktop-child executables
 as well; a Nix-first terminal alone does not prove autostart migrated. On failure,
-select the Arch fallback and inspect `~/.local/share/sddm/wayland-session.log`.
-Do not remove Arch Hyprland, its desktop utilities, or recovery generations yet.
+use a TTY (`Ctrl+Alt+F3`) and inspect `~/.local/share/sddm/wayland-session.log`,
+roll back with `home-manager generations`, or restore a Timeshift snapshot.
+Duplicate Arch desktop packages were removed once the Nix session proved stable;
+only Waybar, Hyprlock, Zen, VS Code, SDDM, fonts, portals, XWayland, GPU/ROCm,
+and system services remain Arch-managed.
 
 ## Build First
 
