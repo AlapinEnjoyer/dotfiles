@@ -1,6 +1,6 @@
 {
   system.defaults = {
-    NSGlobalDomain.AppleShowAllExtensions = true;
+    NSGlobalDomain.AppleShowAllExtensions = false;
 
     finder = {
       _FXSortFoldersFirst = true;
