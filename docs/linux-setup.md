@@ -101,23 +101,26 @@ sets profile-first `PATH` and `XDG_DATA_DIRS`, and pins the watchdog's composito
 path. Hyprland's watchdog automatically invokes the supplied `nixGL` wrapper.
 For Nix GPU apps launched from another session, use `nixGL ghostty` explicitly.
 
-SDDM only scans system session directories here. After building and activating
-Home Manager, install the reviewed entry as root (this name must not
-already exist; inspect it instead if either preflight fails):
+SDDM only scans system session directories here. Its greeter validates
+`TryExec` before authentication as the unprivileged `sddm` user, while `Exec`
+for `TryExec`, allowing the real Home Manager launcher to stay in a private
+home directory. After building and activating Home Manager, install the
+reviewed entry as root:
 
 ```sh
-test ! -e /usr/local/share/wayland-sessions/hyprland-nix.desktop && \
-test ! -L /usr/local/share/wayland-sessions/hyprland-nix.desktop && \
-sudo install -D -m 644 "$HOME/.local/share/wayland-sessions/hyprland-nix.desktop" \
+sudo install -o root -g root -m 644 "$HOME/.local/share/wayland-sessions/hyprland-nix.desktop" \
   /usr/local/share/wayland-sessions/hyprland-nix.desktop
 ```
 
-This is a root-owned copy, not a root service executing user-controlled code.
-The Nix entry starts the user-owned launcher as the logged-in user. Future launcher
-changes follow Home Manager automatically; desktop-entry changes need recopying.
+This is a root-owned copy, not a root service. Future launcher changes follow
+Home Manager automatically; desktop-entry changes need recopying.
 No packaged session entry is overwritten. Do not restart SDDM inside your session.
 Save work, log out normally, and select **Hyprland (Nix)**. If the new entry does
 not appear, reboot after saving work. The entry uses the Home Manager-managed config.
+
+Your home may remain private (`chmod 700 ~`). If SDDM does not show the entry
+after replacing its system-owned files, `sudo systemctl restart sddm` from a
+TTY rescans sessions.
 
 After logging in, verify the running executable rather than only `command -v`:
 

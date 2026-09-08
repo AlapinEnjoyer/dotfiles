@@ -69,7 +69,11 @@ checks=$(nix eval --impure --json --expr '
   assert builtins.any (pkg: (pkg.name or "") == "nixGL") uno.config.home.packages;
   assert !(mini.config.home.file ? ".local/bin/start-hyprland-nix");
   assert lib.hasInfix (builtins.unsafeDiscardStringContext "--path ${uno.pkgs.hyprland}/bin/Hyprland") uno.config.home.file.".local/bin/start-hyprland-nix".text;
+  assert lib.hasInfix "${uno.config.home.profileDirectory}/bin:$HOME/.local/bin:/nix/var/nix/profiles/default/bin:/usr/local/bin:/usr/bin" uno.config.home.file.".local/bin/start-hyprland-nix".text;
+  assert builtins.elem "/nix/var/nix/profiles/default/bin" uno.config.home.sessionPath;
   assert lib.hasInfix "${uno.config.home.profileDirectory}/share:/usr/local/share:/usr/share" uno.config.home.file.".local/bin/start-hyprland-nix".text;
+  assert lib.hasInfix "Exec=/home/ayrton/.local/bin/start-hyprland-nix" uno.config.xdg.dataFile."wayland-sessions/hyprland-nix.desktop".text;
+  assert lib.hasInfix "TryExec=/usr/bin/true" uno.config.xdg.dataFile."wayland-sessions/hyprland-nix.desktop".text;
   assert !cliOnly.config.programs.ghostty.enable;
   assert uno.config.programs.ghostty.enable && mini.config.programs.ghostty.enable;
   assert uno.config.programs.ghostty.package == uno.pkgs.ghostty;

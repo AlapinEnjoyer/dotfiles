@@ -19,20 +19,21 @@ in
       #!${pkgs.runtimeShell}
       set -eu
       . ${lib.escapeShellArg "${profile}/etc/profile.d/hm-session-vars.sh"}
-      export PATH="${profile}/bin:$HOME/.local/bin:/usr/local/bin:/usr/bin"
+      export PATH="${profile}/bin:$HOME/.local/bin:/nix/var/nix/profiles/default/bin:/usr/local/bin:/usr/bin"
       export XDG_DATA_DIRS="${profile}/share:/usr/local/share:/usr/share"
       exec ${pkgs.hyprland}/bin/start-hyprland --path ${pkgs.hyprland}/bin/Hyprland "$@"
     '';
   };
 
-  # SDDM does not discover home-profile sessions. Install this reviewed file
-  # into /usr/local/share/wayland-sessions explicitly as an administrator.
+  # SDDM does not discover home-profile sessions. It validates TryExec before
+  # authentication as its own user, so use a system command there while Exec
+  # remains the Home Manager launcher started after authentication as the user.
   xdg.dataFile."wayland-sessions/hyprland-nix.desktop".text = ''
     [Desktop Entry]
     Name=Hyprland (Nix)
     Comment=Home Manager session with Nix Mesa
     Exec=${config.home.homeDirectory}/.local/bin/start-hyprland-nix
-    TryExec=${config.home.homeDirectory}/.local/bin/start-hyprland-nix
+    TryExec=/usr/bin/true
     Type=Application
     DesktopNames=Hyprland
   '';
