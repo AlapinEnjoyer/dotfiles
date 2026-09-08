@@ -1,0 +1,19 @@
+#compdef ask
+
+local context state state_descr line
+typeset -A opt_args
+
+_arguments -C \
+  '(-m --model)'{-m,--model}'[select model]:model:->model' \
+  '--thinking[show thinking blocks]' \
+  '--variant[model reasoning variant]:variant:(minimal low medium high max)' \
+  '(-f --file)'{-f,--file}'[attach file]:file:_files' \
+  '--fork[fork the continued session]' \
+  '--title[session title]:title:' \
+  '--pure[run without external plugins]' \
+  '--share[share the session]' \
+  '*:prompt' && return
+
+case "$state" in
+  model) _describe 'model' _ask_models ;;
+esac
