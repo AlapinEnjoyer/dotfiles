@@ -51,7 +51,7 @@ before replacing existing shell startup files.
 | Home Manager | Shell, terminal packages, Git settings, Ghostty, fonts, mise and OpenCode configuration | `just switch-hm` |
 | nix-darwin | macOS settings and nix-homebrew lifecycle | `just switch-darwin` |
 | Homebrew | The casks declared in `hosts/mini/configuration.nix` | `just switch-darwin` reconciles undeclared formulas or casks with `cleanup = "zap"`, including Homebrew-defined cask data |
-| mise | OpenCode, uv, Node, pnpm, Rust, and llama.cpp, all at `latest` | Home Manager installs missing tools outside dry runs; `mise upgrade` upgrades them later |
+| mise | OpenCode, uv, Node, pnpm, Rust, and Mini-only Metal llama.cpp, all at `latest` | Home Manager installs missing tools outside dry runs; `mise upgrade` upgrades them later |
 | Nix packages | OpenTofu, Terragrunt, gh, ffmpeg, Neovim, and mise itself | Update pinned inputs |
 | Legacy imperative tools | `hf`, `trv`, and Cargo-installed `rustlings` | Not reproduced by this flake; reconcile individually, preferring Nix or mise |
 
@@ -78,7 +78,7 @@ exact versions from an earlier machine. `mise upgrade` is never run during Home
 Manager activation.
 
 Nix is the default package owner; mise is the intended alternate for selected
-runtimes and upstream llama.cpp builds. Homebrew casks remain explicit macOS
+runtimes and the Mini's upstream Metal llama.cpp build. Homebrew casks remain explicit macOS
 migration exceptions. Existing uv/Cargo tools are retained, not silently removed.
 
 Revalidate on the Mac with `just build-hm`, `just switch-hm-dry-run`, then

@@ -14,7 +14,7 @@ any Arch packages.
 | --- | --- |
 | Home Manager | Shared terminal, Nix Ghostty, user-space desktop packages, native desktop config links, fonts/icons, wallpaper assets/script, CLI tools, and a Nix session launcher with nixGL |
 | Pacman/AUR | Waybar, Hyprlock/PAM, Zen, GPU/ROCm drivers and system packages |
-| mise | OpenCode, uv, Node, pnpm, Rust, and upstream llama.cpp prerelease binaries, all at `latest` |
+| mise | OpenCode, uv, Node, pnpm, and Rust, all at `latest` |
 | Arch/systemd | Login/session setup, NetworkManager, Bluetooth, audio, power management |
 | Wallpaper script | `~/.cache/wallpaper-index` and regular writable `~/.config/rofi/background.rasi` |
 | Nix installer | Nix daemon, store, and shell integration |
@@ -79,11 +79,15 @@ before relying on idle locking. Suspend/hibernate support remains system-owned.
 ### Non-NixOS Graphics
 
 Uno imports `modules/linux/session.nix`, using pinned nixGL Mesa built with the
-same nixpkgs input as its applications. Only 64-bit Mesa is included; there is no
-NVIDIA autodetection, Intel media driver, kernel driver, or ROCm migration. Arch's
-GPU packages remain installed and unchanged. The wrapper supplies process-local
-graphics paths, not global shell `LD_LIBRARY_PATH` settings. This is Uno-specific;
-the Mac imports neither this module nor nixGL.
+same nixpkgs input as its applications. The module supplies only user-space
+graphics wrapping; Arch owns the AMD kernel, display-driver, and ROCm stack. The
+wrapper supplies process-local graphics paths, not global shell `LD_LIBRARY_PATH`
+settings. This is Uno-specific; the Mac imports neither this module nor nixGL.
+
+ROCm compute remains Arch/AUR-owned. Uno's RX 9070 is `gfx1201`; the stable
+TheRock-based ROCm Core SDK uses `/opt/rocm/core`, exposed to Home Manager sessions
+as `ROCM_PATH` and `ROCM_HOME`. This compute stack is separate from nixGL's graphics
+wrapper. Uno's llama.cpp HIP build is compiled locally rather than installed by mise.
 
 The wrapper has passed Wayland/EGL and Xwayland/GLX hardware-rendering checks on
 Uno's Radeon RX 9070 with Nix Mesa 26.1.8. An all-device EGL probe also reported an

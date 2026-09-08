@@ -14,7 +14,15 @@
 
   programs.home-manager.enable = true;
 
-  home.sessionVariables.ROCM_PATH = "/opt/rocm";
+  # ROCm Core SDK remains Arch-owned; Uno's RX 9070 uses the TheRock path.
+  home.sessionVariables = {
+    ROCM_PATH = "/opt/rocm/core";
+    ROCM_HOME = "/opt/rocm/core";
+  };
+  home.sessionPath = [
+    "/opt/rocm/core/bin"
+    "/opt/rocm/core/lib/llvm/bin"
+  ];
 
   home.packages = with pkgs; [
     fastfetch

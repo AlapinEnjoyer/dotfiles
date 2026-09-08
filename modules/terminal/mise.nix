@@ -10,12 +10,6 @@
       node = "latest";
       pnpm = "latest";
       rust = "latest";
-      # Upstream publishes binary builds as b-prefixed prereleases.
-      "github:ggml-org/llama.cpp" = {
-        version = "latest";
-        version_prefix = "b";
-        prerelease = true;
-      };
     };
   };
 

@@ -40,9 +40,9 @@ checks=$(nix eval --impure --json --expr '
       assert builtins.elem p.viu c.home.packages;
       assert builtins.all (pkg: builtins.elem pkg c.home.packages) [ p.tealdeer p.wget ];
       assert !(c.xdg.configFile ? "nvim/init.lua");
-      assert builtins.attrNames c.programs.mise.globalConfig.tools == [
-        "github:ggml-org/llama.cpp" "node" "opencode" "pnpm" "rust" "uv"
-      ];
+      assert builtins.all
+        (name: builtins.hasAttr name c.programs.mise.globalConfig.tools)
+        [ "node" "opencode" "pnpm" "rust" "uv" ];
       assert c.programs.mise.globalConfig.tools.uv == "latest";
       assert c.programs.mise.globalConfig.tools.opencode == "latest";
       assert !(c.home.activation ? removeLegacyOpencodeFiles);
@@ -65,13 +65,18 @@ checks=$(nix eval --impure --json --expr '
     };
   in
   assert shared uno && shared mini && shared cliOnly;
+  assert !(builtins.hasAttr "github:ggml-org/llama.cpp" uno.config.programs.mise.globalConfig.tools);
+  assert builtins.hasAttr "github:ggml-org/llama.cpp" mini.config.programs.mise.globalConfig.tools;
   assert builtins.elem uno.pkgs.hyprland uno.config.home.packages;
   assert builtins.elem uno.pkgs.hyprshot uno.config.home.packages;
   assert builtins.elem uno.pkgs.blueman uno.config.dbus.packages;
   assert uno.config.xdg.configFile ? "systemd/user/blueman-manager.service";
   assert builtins.elem uno.pkgs.fastfetch uno.config.home.packages;
   assert builtins.elem uno.pkgs.nvtopPackages.amd uno.config.home.packages;
-  assert uno.config.home.sessionVariables.ROCM_PATH == "/opt/rocm";
+  assert uno.config.home.sessionVariables.ROCM_PATH == "/opt/rocm/core";
+  assert uno.config.home.sessionVariables.ROCM_HOME == "/opt/rocm/core";
+  assert builtins.elem "/opt/rocm/core/bin" uno.config.home.sessionPath;
+  assert builtins.elem "/opt/rocm/core/lib/llvm/bin" uno.config.home.sessionPath;
   assert !(builtins.elem uno.pkgs.waybar uno.config.home.packages);
   assert builtins.any (pkg: (pkg.name or "") == "nixGL") uno.config.home.packages;
   assert !(mini.config.home.file ? ".local/bin/start-hyprland-nix");

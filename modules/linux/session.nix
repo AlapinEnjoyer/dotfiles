@@ -1,7 +1,7 @@
 { config, lib, pkgs, nixgl, ... }:
 
 let
-  # Same Mesa/nixpkgs as the applications; no host-driver autodetection or ROCm.
+  # Same Mesa/nixpkgs as the applications; Arch owns the AMD host stack and ROCm.
   graphics = import nixgl {
     inherit pkgs;
     enable32bits = false;

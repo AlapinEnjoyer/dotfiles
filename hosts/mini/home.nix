@@ -12,7 +12,12 @@
 
   programs.home-manager.enable = true;
 
-  # These tools are installed on the mini, rather than every terminal host.
+  programs.mise.globalConfig.tools."github:ggml-org/llama.cpp" = {
+    version = "latest";
+    version_prefix = "b";
+    prerelease = true;
+  };
+
   home.packages = with pkgs; [
     exiv2
     smartmontools
