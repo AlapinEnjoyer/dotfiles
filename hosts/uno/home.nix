@@ -14,6 +14,8 @@
 
   programs.home-manager.enable = true;
 
+  home.sessionVariables.ROCM_PATH = "/opt/rocm";
+
   home.packages = with pkgs; [
     fastfetch
     nvtopPackages.amd

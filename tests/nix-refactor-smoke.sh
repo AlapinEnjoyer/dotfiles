@@ -71,6 +71,7 @@ checks=$(nix eval --impure --json --expr '
   assert uno.config.xdg.configFile ? "systemd/user/blueman-manager.service";
   assert builtins.elem uno.pkgs.fastfetch uno.config.home.packages;
   assert builtins.elem uno.pkgs.nvtopPackages.amd uno.config.home.packages;
+  assert uno.config.home.sessionVariables.ROCM_PATH == "/opt/rocm";
   assert !(builtins.elem uno.pkgs.waybar uno.config.home.packages);
   assert builtins.any (pkg: (pkg.name or "") == "nixGL") uno.config.home.packages;
   assert !(mini.config.home.file ? ".local/bin/start-hyprland-nix");
