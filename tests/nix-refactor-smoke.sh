@@ -49,7 +49,7 @@ checks=$(nix eval --impure --json --expr '
       assert lib.hasInfix "run /nix/store/" c.home.activation.miseInstall.data;
       assert !(lib.hasInfix "reshim" c.home.activation.miseInstall.data);
       assert c.programs.opencode.settings.mcp.semble.command == [
-        "uvx" "--from" "semble[mcp]==0.5.6" "semble"
+        "uvx" "--from" "semble[mcp]==0.6.0" "semble"
       ];
       true;
     isolated = uno.extendModules {

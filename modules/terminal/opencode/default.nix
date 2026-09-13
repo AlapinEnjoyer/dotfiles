@@ -38,7 +38,7 @@
       };
 
       mcp.semble = {
-        command = [ "uvx" "--from" "semble[mcp]==0.5.6" "semble" ];
+        command = [ "uvx" "--from" "semble[mcp]==0.6.0" "semble" ];
         type = "local";
         enabled = true;
       };
@@ -69,7 +69,7 @@
         };
         openrouter = {
           whitelist = [
-            "deepseek/deepseek-v4-flash-0731"
+            "deepseek/deepseek-v4.1-flash"
             "xiaomi/mimo-v2.5"
             "xiaomi/mimo-v2.5-pro"
           ];
@@ -96,14 +96,14 @@
                 allow_fallbacks = false;
               };
             };
-            "deepseek/deepseek-v4-flash-0731" = {
-              name = "DeepSeek V4 Flash 0731";
+            "deepseek/deepseek-v4.1-flash" = {
+              name = "DeepSeek V4.1 Flash";
               limit = {
                 context = 1048576;
                 output = 262144;
               };
               options.provider = {
-                order = [ "streamlake/fp8" ];
+                order = [ "deepseek" ];
                 allow_fallbacks = false;
               };
             };

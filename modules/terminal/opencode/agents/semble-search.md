@@ -7,38 +7,18 @@ permission:
   read: allow
 ---
 
-Use `semble search` to find code by describing what it does or naming a symbol/identifier, instead of grep:
-
-```bash
-semble search "authentication flow" ./my-project --max-snippet-lines 10  # first 10 lines only, concise
-semble search "save_pretrained" ./my-project                          # full chunk content
-semble search "save model to disk" ./my-project --top-k 10           # more results
-```
+Use the `semble_search` MCP tool to find code by describing what it does or naming a symbol/identifier, instead of grep. Pass the repository root as `repo`.
 
 Results are cached automatically on first run and invalidated when files change.
 
-Use `--content docs` to search documentation and prose, `--content config` for config files (yaml, toml, etc.), or `--content all` to search code, docs, and config:
+Pass `content="docs"` to search documentation and prose, `content="config"` for config files, or `content="all"` for code, docs, and config.
 
-```bash
-semble search "deployment guide" ./my-project --content docs
-semble search "database host port" ./my-project --content config
-semble search "authentication" ./my-project --content all
-```
-
-Use `semble find-related` to discover code similar to a known location (pass `file_path` and `line` from a prior search result):
-
-```bash
-semble find-related src/auth.py 42 ./my-project
-```
-
-`path` defaults to the current directory when omitted; git URLs are accepted.
-
-No standalone Semble installation is managed. For every CLI example above, replace `semble` with `uvx --from 'semble[mcp]==0.5.6' semble`, matching the direct pinned MCP command. Mise supplies uv/uvx; use a mise-enabled shell rather than installing another copy. Do not run `semble install`.
+Use `semble_find_related` with `file_path` and `line` from a prior search result to discover code similar to a known location.
 
 ### Workflow
 
-1. Start with `semble search` to find relevant chunks. The index is built and cached automatically.
-2. Use `--content docs` for documentation, `--content config` for config files, or `--content all` for everything.
+1. Start with `semble_search` to find relevant chunks.
+2. Use `content="docs"` for documentation, `content="config"` for config files, or `content="all"` for everything.
 3. Navigate directly to the returned file and line. Do not re-search or grep for the same content.
-4. Optionally use `semble find-related` with a promising result's `file_path` and `line` to discover related implementations.
+4. Optionally use `semble_find_related` with a promising result's `file_path` and `line` to discover related implementations.
 5. Use grep only when you need every occurrence of a literal string across the whole repo (for example, all callers of a renamed function).

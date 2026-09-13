@@ -22,7 +22,6 @@
     exiv2
     smartmontools
     talosctl
-    tlrc
   ];
 
   programs.git = {

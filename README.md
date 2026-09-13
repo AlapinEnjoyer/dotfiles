@@ -64,7 +64,7 @@ OpenCode and uv are installed by mise. Home Manager owns their configuration;
 binary. Semble runs through the pinned command:
 
 ```sh
-uvx --from 'semble[mcp]==0.5.6' semble
+uvx --from 'semble[mcp]==0.6.0' semble
 ```
 
 Keep the OpenCode legacy-config conflict checks enabled. See the host guides for

@@ -60,14 +60,14 @@ a warning bug with `package = null` in the pinned Home Manager release. This
 installs no OpenCode binary; mise owns OpenCode and uv at `latest`. OpenCode
 self-updates are disabled so `mise upgrade` owns updates.
 
-Semble's MCP and CLI fallback directly run
-`uvx --from 'semble[mcp]==0.5.6' semble`; there is no `packages/semble.nix` or Nix
+Semble's MCP server directly runs
+`uvx --from 'semble[mcp]==0.6.0' semble`; there is no `packages/semble.nix` or Nix
 launcher. Launch OpenCode from a mise-enabled Zsh so it inherits uvx on PATH.
 The first run needs network access and resolves Python dependencies into uv's
 cache; they are not transitively locked by Nix. Do not run `semble install`,
 `uv tool install`, or `uv tool upgrade semble` for this integration. Update the
-pin in the MCP config and both instruction templates in
-`modules/terminal/opencode/` together. Existing standalone copies are neither
+pin in `modules/terminal/opencode/default.nix`, `README.md`, this guide, and
+`tests/nix-refactor-smoke.sh` together. Existing standalone copies are neither
 used by MCP nor deleted here. See the
 [shared integration notes](../README.md#semble-and-opencode) for safe legacy
 OpenCode conflict handling and remaining runtime verification.
